@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import UserModel from '../models/user.model';
+import UserModel from '../models/user.model.js';
 
 export const authMiddleware = async (req, res, next) => {
     if (!req.headers.authorization || !req.headers.authorization.startsWith("Bearer")) {
