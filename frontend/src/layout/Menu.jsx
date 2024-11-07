@@ -1,6 +1,5 @@
-import { IoGridOutline } from "react-icons/io5";
+import { IoGridOutline, IoReceiptOutline } from "react-icons/io5";
 import { IoPeopleOutline } from "react-icons/io5";
-import { IoSchoolOutline } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoBookOutline } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
@@ -17,14 +16,14 @@ const data = [
     path: "/admin/users",
   },
   {
-    icon: <IoSchoolOutline size={25} />,
-    title: "Teachers",
-    path: "/admin/teachers",
-  },
-  {
     icon: <IoBookOutline size={25} />,
     title: "Courses",
     path: "/admin/courses",
+  },
+  {
+    icon: <IoReceiptOutline size={25} />,
+    title: "Course Order",
+    path: "/admin/course-order",
   },
   {
     icon: <IoSettingsOutline size={25} />,
