@@ -62,6 +62,38 @@ const registerCourseController = {
                 message: 'Error fetching new registrations: ' + error.message
             });
         }
+    },
+
+    registerCourse: async (req, res) => {
+        try {
+            const { userId, courseId } = req.body;
+
+            const existingRegistration = await RegisterCourseModel.findOne({
+                userId,
+                courseId
+            });
+
+            if (existingRegistration) {
+                return res.status(400).json({
+                    message: "Course already registered."
+                });
+            }
+            const newRegistration = new RegisterCourseModel({
+                userId,
+                courseId,
+                status: "Pending"
+            });
+
+            await newRegistration.save();
+            res.status(201).json({
+                message: "Registration successful.",
+                data: newRegistration
+            });
+        } catch (error) {
+            res.status(400).json({
+                message: error.message
+            });
+        }
     }
 };
 
