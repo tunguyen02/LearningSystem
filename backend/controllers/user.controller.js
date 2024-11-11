@@ -2,9 +2,9 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import UserModel from '../models/user.model.js';
 
-const createToken = (id) => {
+const createToken = (id, role, name) => {
     return jwt.sign(
-        { id },
+        { id, role, name },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRES_IN }
     )
