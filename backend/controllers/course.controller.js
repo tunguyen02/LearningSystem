@@ -1,6 +1,7 @@
 import CourseModel from "../models/course.model.js";
 import APIFeatures from "../utils/apiFeature.js";
 import RegisterCourseModel from "../models/registerCourse.model.js";
+import uploadController from "./upload.controller.js";
 const courseController = {
     getAllCourses: async (req, res) => {
         try {
@@ -48,13 +49,17 @@ const courseController = {
     },
 
     createCourse: async (req, res) => {
+        let imageUrl = null;
+        if (req.file) {
+            imageUrl = await uploadController.uploadFile(req.file);
+        }
         try {
             const course = new CourseModel({
                 name: req.body.name,
                 level: req.body.level,
                 price: req.body.price,
                 discountPrice: req.body.discountPrice,
-                image: req.body.image,
+                image: imageUrl,
                 description: req.body.description
             });
             const savedCourse = await course.save();
@@ -73,28 +78,36 @@ const courseController = {
     updateCourse: async (req, res) => {
         try {
             const course = await CourseModel.findById(req.params.id);
+
             if (!course) {
                 return res.status(404).json({
                     success: false,
                     message: "Course not found"
-                })
+                });
             }
-            course.name = req.body.name;
-            course.level = req.body.level;
-            course.price = req.body.price;
-            course.discountPrice = req.body.discountPrice;
-            course.image = req.body.image;
-            course.description = req.body.description;
+
+            course.name = req.body.name || course.name;
+            course.price = req.body.price || course.price;
+            course.discountPrice = req.body.discountPrice || course.discountPrice;
+
+            if (req.body.image) {
+                course.image = req.body.image;
+            }
+
+            course.description = req.body.description || course.description;
+
             const updatedCourse = await course.save();
+
             res.json({
                 success: true,
                 data: updatedCourse
-            })
+            });
+
         } catch (error) {
             res.status(500).json({
                 success: false,
                 message: error.message
-            })
+            });
         }
     },
 

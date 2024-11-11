@@ -5,6 +5,7 @@ const RegistrationRouter = Router();
 
 RegistrationRouter.get('/', registerCourseController.getAllRegistrations);
 RegistrationRouter.get('/new', registerCourseController.getNewRegistrations);
+RegistrationRouter.post('/', registerCourseController.registerCourse);
 RegistrationRouter.put('/:id', registerCourseController.updateRegistrationStatus);
 
 export default RegistrationRouter;
