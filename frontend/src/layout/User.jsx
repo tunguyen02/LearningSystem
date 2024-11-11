@@ -1,40 +1,34 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Menu from "./Menu";
-import { IoGridOutline, IoReceiptOutline } from "react-icons/io5";
-import { IoPeopleOutline } from "react-icons/io5";
+import { IoPersonOutline, IoReceiptOutline } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoBookOutline } from "react-icons/io5";
 
 const data = [
   {
-    icon: <IoGridOutline size={25} />,
-    title: "Dashboard",
-    path: "/admin/dashboard",
-  },
-  {
-    icon: <IoPeopleOutline size={25} />,
-    title: "Users",
-    path: "/admin/users",
+    icon: <IoPersonOutline size={25} />,
+    title: "Profile",
+    path: "/user/profile",
   },
   {
     icon: <IoBookOutline size={25} />,
     title: "Courses",
-    path: "/admin/courses",
+    path: "/user/courses",
   },
   {
     icon: <IoReceiptOutline size={25} />,
     title: "Course Order",
-    path: "/admin/course-order",
+    path: "/user/course-order",
   },
   {
     icon: <IoSettingsOutline size={25} />,
     title: "Setting",
-    path: "/admin/setting",
+    path: "/user/setting",
   },
 ];
 
-const Admin = () => {
+const User = () => {
   return (
     <div>
       <Navbar />
@@ -46,4 +40,4 @@ const Admin = () => {
   );
 };
 
-export default Admin;
+export default User;
