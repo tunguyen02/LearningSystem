@@ -1,9 +1,41 @@
-import { Button, Input } from "antd";
+import { Button, Input, message } from "antd";
 import { FaArrowRight } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import axios from "axios";
+import { Controller, useForm } from "react-hook-form";
+
+const schema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Email is required"),
+  password: Yup.string().required("Password is required"),
+});
 
 const Login = () => {
   const navigate = useNavigate();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/v1/users/login",
+        data
+      );
+      localStorage.setItem("token", response.data.token);
+      message.success("Login successful");
+      navigate("/admin/dashboard");
+    } catch (error) {
+      console.error("Login failed", error);
+      message.error(error.response.data.message);
+    }
+  };
+
   return (
     <div className="flex">
       <div className="flex-[4] h-screen">
@@ -13,19 +45,47 @@ const Login = () => {
           alt=""
         />
       </div>
-      <form className="flex-[3] flex flex-col w-full items-center justify-center px-32 gap-5">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex-[3] flex flex-col w-full items-center justify-center px-32 gap-5"
+      >
         <h1 className="text-3xl font-semibold">Sign in to your account</h1>
+
+        {/* Email Input */}
         <div className="flex flex-col gap-1 w-full">
           <label className="font-semibold">Email</label>
-          <Input size="large" placeholder="Email ID" />
+          <Controller
+            name="email"
+            control={control}
+            render={({ field }) => (
+              <Input {...field} size="large" placeholder="Email ID" />
+            )}
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email.message}</p>
+          )}
         </div>
+
+        {/* Password Input */}
         <div className="flex flex-col gap-1 w-full">
           <label className="font-semibold">Password</label>
-          <Input.Password size="large" placeholder="Password" />
+          <Controller
+            name="password"
+            control={control}
+            render={({ field }) => (
+              <Input.Password {...field} size="large" placeholder="Password" />
+            )}
+          />
+          {errors.password && (
+            <p className="text-red-500 text-sm">{errors.password.message}</p>
+          )}
         </div>
+
+        {/* Sign In Button */}
         <div className="flex flex-col w-full gap-2">
           <div>
             <Button
+              htmlType="submit"
               iconPosition="end"
               icon={<FaArrowRight size={20} />}
               type="primary"

@@ -1,56 +1,30 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, Typography, Input } from "antd";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const { Title, Text } = Typography;
 
-const mockCourses = [
-  {
-    name: "Web Development for Beginners",
-    category: "Programming",
-    level: "Beginner",
-    price: 99,
-    discountPrice: 49,
-    image: "https://via.placeholder.com/150",
-    description:
-      "Learn the fundamentals of web development with HTML, CSS, and JavaScript.",
-  },
-  {
-    name: "Advanced React",
-    category: "Programming",
-    level: "Advanced",
-    price: 199,
-    discountPrice: 149,
-    image: "https://via.placeholder.com/150",
-    description: "Master React and build advanced applications.",
-  },
-  {
-    name: "Data Science with Python",
-    category: "Data Science",
-    level: "Intermediate",
-    price: 149,
-    discountPrice: 99,
-    image: "https://via.placeholder.com/150",
-    description: "Learn data analysis, machine learning, and more with Python.",
-  },
-  {
-    name: "UI/UX Design Fundamentals",
-    category: "Design",
-    level: "Beginner",
-    price: 120,
-    discountPrice: 99,
-    image: "https://via.placeholder.com/150",
-    description:
-      "Get started with UI/UX design and create user-centered designs.",
-  },
-];
-
 const Courses = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [Courses, setCourses] = useState([]);
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/courses"
+        );
+        setCourses(response.data.data.courses);
+      } catch (e) {
+        console.error("Failed to fetch courses:", e);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const navigate = useNavigate();
 
-  const filteredCourses = mockCourses.filter((course) =>
+  const filteredCourses = Courses.filter((course) =>
     course.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -71,7 +45,7 @@ const Courses = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
         {filteredCourses.map((course, index) => (
           <Card
-            onClick={() => navigate("/user/courses/idCourses")}
+            onClick={() => navigate(`/user/courses/${course._id}`)}
             key={index}
             hoverable
             cover={

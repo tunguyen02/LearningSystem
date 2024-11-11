@@ -11,26 +11,14 @@ import {
   Input,
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 const mockCourse = {
-  name: "Advanced React",
-  category: "Programming",
-  level: "Advanced",
-  price: 199,
-  discountPrice: 149,
-  image: "https://via.placeholder.com/500x300",
-  description: "Master React and build advanced applications.",
-  lessons: [
-    { order: 1, title: "Lesson 1: Introduction to Advanced React" },
-    { order: 2, title: "Lesson 2: React Hooks Deep Dive" },
-    { order: 3, title: "Lesson 3: Advanced Patterns in React" },
-    { order: 4, title: "Lesson 4: State Management in React" },
-    { order: 5, title: "Lesson 5: React Performance Optimization" },
-  ],
   comments: [
     {
       user: "John Doe",
@@ -56,6 +44,26 @@ const mockCourse = {
 const DetailsCourses = () => {
   const [comment, setComment] = useState("");
   const [comments, setComments] = useState(mockCourse.comments);
+  const [courses, setCourses] = useState([]);
+  const [lessons, setLessons] = useState([]);
+  const { id } = useParams();
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/courses/${id}`
+        );
+        setCourses(response.data.data);
+        const responseLessons = await axios.get(
+          `http://localhost:8080/api/v1/lessons?courseId=${id}`
+        );
+        setLessons(responseLessons.data.data);
+      } catch (e) {
+        console.error("Failed to fetch courses:", e);
+      }
+    };
+    fetchCourses();
+  }, [id]);
 
   const handleCommentSubmit = () => {
     if (comment.trim()) {
@@ -72,12 +80,11 @@ const DetailsCourses = () => {
   return (
     <div className="p-5">
       <Row gutter={16}>
-        {/* Left Section - Lessons */}
         <Col xs={24} md={16}>
           <Card title="Lessons" className="shadow-lg">
             <List
               bordered
-              dataSource={mockCourse.lessons}
+              dataSource={lessons}
               renderItem={(lesson) => (
                 <List.Item>
                   <Text>
@@ -90,29 +97,28 @@ const DetailsCourses = () => {
           </Card>
         </Col>
 
-        {/* Right Section - Course Info */}
         <Col xs={24} md={8}>
           <Card
             hoverable
-            cover={<img alt={mockCourse.name} src={mockCourse.image} />}
+            cover={<img alt={courses.name} src={courses.image} />}
             className="shadow-lg"
           >
-            <Title level={2}>{mockCourse.name}</Title>
+            <Title level={2}>{courses.name}</Title>
             <Text strong>
-              {mockCourse.category} - {mockCourse.level}
+              {courses.category} - {courses.level}
             </Text>
             <div className="mt-2">
               <Text strong className="text-lg">
-                ${mockCourse.discountPrice || mockCourse.price}
+                ${courses.discountPrice || courses.price}
               </Text>
-              {mockCourse.discountPrice && (
+              {courses.discountPrice && (
                 <Text className="ml-2 text-gray-500 line-through">
-                  ${mockCourse.price}
+                  ${courses.price}
                 </Text>
               )}
             </div>
             <Text className="text-sm text-gray-700 mt-2">
-              {mockCourse.description}
+              {courses.description}
             </Text>
 
             <div className="mt-4">

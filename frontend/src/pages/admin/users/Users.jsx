@@ -1,8 +1,21 @@
 import { Button, Input } from "antd";
+// import axios from "axios";
+// import { useEffect } from "react";
 import { CiSearch } from "react-icons/ci";
 import { IoCreateOutline, IoEyeOutline, IoTrashOutline } from "react-icons/io5";
 
 const Users = () => {
+  // useEffect(() => {
+  //   const fetchUsers = async () => {
+  //     try {
+  //       const response = await axios.get("http://localhost:8080/api/v1/users");
+  //       console.log("Users:", response.data);
+  //     } catch (e) {
+  //       console.error("Failed to fetch users:", e);
+  //     }
+  //   };
+  //   fetchUsers();
+  // }, []);
   return (
     <div className="flex flex-col gap-4 px-2">
       <h1 className="text-3xl text-gray-600 font-semibold">Courses</h1>

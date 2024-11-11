@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import Admin from "./layout/Admin";
@@ -34,9 +34,10 @@ const App = () => {
       </Route>
       <Route path="/user" element={<User />}>
         <Route path="courses" element={<Courses />} />
-        <Route path="courses/idCourses" element={<DetailsCourses />} />
+        <Route path="courses/:id" element={<DetailsCourses />} />
         <Route path="courses/idCourses/learn" element={<CoursesLearn />} />
       </Route>
+      <Route path="*" element={<Navigate to="/auth/login" />} />
     </Routes>
   );
 };

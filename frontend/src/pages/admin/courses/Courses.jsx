@@ -1,4 +1,6 @@
 import { Button, Input } from "antd";
+import axios from "axios";
+import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { CiCirclePlus } from "react-icons/ci";
 import { IoCreateOutline, IoEyeOutline, IoTrashOutline } from "react-icons/io5";
@@ -6,6 +8,21 @@ import { useNavigate } from "react-router-dom";
 
 const Courses = () => {
   const navigate = useNavigate();
+  const [courses, setCourses] = useState([]);
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8080/api/v1/courses"
+        );
+        setCourses(response.data.data.courses);
+      } catch (e) {
+        console.error("Failed to fetch courses:", e);
+      }
+    };
+    fetchCourses();
+  }, []);
+
   return (
     <div className="flex flex-col gap-4 px-2">
       <h1 className="text-3xl text-gray-600 font-semibold">Courses</h1>
@@ -41,64 +58,41 @@ const Courses = () => {
           </tr>
         </thead>
         <tbody>
-          <tr className="border-b border-gray-300">
-            <td className="text-center flex justify-center">
-              <img
-                className="w-32 h-20 rounded-md object-cover"
-                src="https://www.w3schools.com/howto/img_avatar.png"
-                alt=""
-              />
-            </td>
-            <td className="text-center">1</td>
-            <td className="text-center">Full Stack</td>
-            <td className="text-center">Category</td>
-            <td className="text-center">Level</td>
-            <td className="text-center">Price</td>
-            <td className="text-center">Discount Price</td>
-            <td className="text-center">
-              <Button
-                className="border-none"
-                icon={<IoEyeOutline size={20} />}
-              />
-              <Button
-                className="border-none"
-                icon={<IoCreateOutline size={20} />}
-              />
-              <Button
-                className="border-none"
-                icon={<IoTrashOutline size={20} />}
-              />
-            </td>
-          </tr>
-          <tr className="border-b border-gray-300">
-            <td className="text-center flex justify-center">
-              <img
-                className="w-32 h-20 rounded-md object-cover"
-                src="https://www.w3schools.com/howto/img_avatar.png"
-                alt=""
-              />
-            </td>
-            <td className="text-center">1</td>
-            <td className="text-center">Full Stack</td>
-            <td className="text-center">Category</td>
-            <td className="text-center">Level</td>
-            <td className="text-center">Price</td>
-            <td className="text-center">Discount Price</td>
-            <td className="text-center">
-              <Button
-                className="border-none"
-                icon={<IoEyeOutline size={20} />}
-              />
-              <Button
-                className="border-none"
-                icon={<IoCreateOutline size={20} />}
-              />
-              <Button
-                className="border-none"
-                icon={<IoTrashOutline size={20} />}
-              />
-            </td>
-          </tr>
+          {courses.map((course, index) => (
+            <tr key={index} className="border-b border-gray-300">
+              <td className="text-center flex justify-center">
+                <img
+                  className="w-32 h-20 rounded-md object-cover"
+                  src={course.image}
+                  alt=""
+                />
+              </td>
+              <td className="text-center">{index + 1}</td>
+              <td className="text-center max-w-[250px] truncate overflow-hidden whitespace-nowrap">
+                {course.name}
+              </td>
+              <td className="text-center max-w-[250px] truncate overflow-hidden whitespace-nowrap">
+                {course.category}
+              </td>
+              <td className="text-center">{course.level}</td>
+              <td className="text-center">{course.price}</td>
+              <td className="text-center">{course.discountPrice}</td>
+              <td className="text-center">
+                <Button
+                  className="border-none"
+                  icon={<IoEyeOutline size={20} />}
+                />
+                <Button
+                  className="border-none"
+                  icon={<IoCreateOutline size={20} />}
+                />
+                <Button
+                  className="border-none"
+                  icon={<IoTrashOutline size={20} />}
+                />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>
