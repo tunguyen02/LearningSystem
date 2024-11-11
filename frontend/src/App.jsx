@@ -14,6 +14,7 @@ import User from "./layout/User";
 import Courses from "./pages/user/courses/Courses";
 import DetailsCourses from "./pages/user/courses/DetailsCourses";
 import CoursesLearn from "./pages/user/courses/CoursesLearn";
+import Payment from "./pages/user/courses/Payment";
 
 const App = () => {
   return (
@@ -35,6 +36,7 @@ const App = () => {
       <Route path="/user" element={<User />}>
         <Route path="courses" element={<Courses />} />
         <Route path="courses/:id" element={<DetailsCourses />} />
+        <Route path="courses/payment/:id" element={<Payment />} />
         <Route path="courses/idCourses/learn" element={<CoursesLearn />} />
       </Route>
       <Route path="*" element={<Navigate to="/auth/login" />} />
