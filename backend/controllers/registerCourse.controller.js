@@ -70,7 +70,8 @@ const registerCourseController = {
 
             const existingRegistration = await RegisterCourseModel.findOne({
                 userId,
-                courseId
+                courseId,
+                status: { $ne: 'cancelled' }
             });
 
             if (existingRegistration) {
@@ -81,7 +82,7 @@ const registerCourseController = {
             const newRegistration = new RegisterCourseModel({
                 userId,
                 courseId,
-                status: "Pending"
+                status: "pending"
             });
 
             await newRegistration.save();

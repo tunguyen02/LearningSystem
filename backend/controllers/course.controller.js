@@ -41,7 +41,7 @@ const courseController = {
                 data: course
             })
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: error.message
             })
@@ -57,21 +57,23 @@ const courseController = {
             const course = new CourseModel({
                 name: req.body.name,
                 level: req.body.level,
+                category: req.body.category,
                 price: req.body.price,
                 discountPrice: req.body.discountPrice,
                 image: imageUrl,
                 description: req.body.description
             });
             const savedCourse = await course.save();
+
             res.json({
                 success: true,
                 data: savedCourse
-            })
+            });
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: error.message
-            })
+            });
         }
     },
 
@@ -138,7 +140,7 @@ const courseController = {
             const registration = await RegisterCourseModel.findOne({
                 userId: req.user._id,
                 courseId: req.params.id,
-                status: "Confirmed"
+                status: "approved"
             })
             if (registration) {
                 return res.json({

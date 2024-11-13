@@ -65,7 +65,7 @@ const userController = {
                     message: "Invalid email or password."
                 });
             }
-            const token = createToken(user._id);
+            const token = createToken(user._id, user.role, user.name);
             res.status(200).json({
                 message: "User logged in successfully.",
                 token
