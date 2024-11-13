@@ -33,7 +33,7 @@ const uploadController = {
             const result = await cloudinary.uploader.upload(dataUrl, {
                 public_id: fileName,
                 resource_type: 'auto',
-                folder: 'Edupress',
+                folder: 'LearningSystem',
                 overwrite: true
             });
             listResult.push(result);
