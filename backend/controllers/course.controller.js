@@ -159,6 +159,25 @@ const courseController = {
             })
 
         }
+    },
+
+    getAllCourseByUser: async (req, res) => {
+        try {
+            const userId = req.user._id;
+            const courses = await RegisterCourseModel.find({ userId }).populate("courseId", "name");
+            res.json({
+                success: true,
+                result: courses.length,
+                data: {
+                    courses
+                }
+            })
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                message: error.message
+            })
+        }
     }
 };
 

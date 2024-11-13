@@ -18,16 +18,18 @@ const lessonSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    videos: {
-        title: {
-            type: String,
-            required: true,
-        },
-        url: {
-            type: String,
-            required: true,
+    videos: [
+        {
+            title: {
+                type: String,
+                // required: true,
+            },
+            url: {
+                type: String,
+                // required: true,
+            }
         }
-    }
+    ]
 },
     {
         timestamps: true,

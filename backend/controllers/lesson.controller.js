@@ -10,7 +10,7 @@ const lessonController = {
                 data: lesson
             });
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: 'Error creating lesson: ' + error.message
             });
@@ -27,6 +27,7 @@ const lessonController = {
 
             res.json({
                 success: true,
+                result: lessons.length,
                 data: lessons
             });
         } catch (error) {
