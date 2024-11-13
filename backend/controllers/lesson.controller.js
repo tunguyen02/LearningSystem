@@ -21,7 +21,10 @@ const lessonController = {
         try {
             const { courseId } = req.query;
             const filter = courseId ? { courseId } : {};
+            console.log(filter);
             const lessons = await LessonModel.find(filter).populate('courseId');
+            console.log(lessons);
+
             res.json({
                 success: true,
                 data: lessons
