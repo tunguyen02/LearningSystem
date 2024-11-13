@@ -33,6 +33,25 @@ const lessonController = {
       });
     }
   },
+  getAllLessons: async (req, res) => {
+    try {
+      const { courseId } = req.query;
+      const filter = courseId ? { courseId } : {};
+      console.log(filter);
+      const lessons = await LessonModel.find(filter).populate("courseId");
+      console.log(lessons);
+
+      res.json({
+        success: true,
+        data: lessons,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error fetching lessons: " + error.message,
+      });
+    }
+  },
 
   getLessonById: async (req, res) => {
     try {
