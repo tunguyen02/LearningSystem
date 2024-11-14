@@ -4,6 +4,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { message } from "antd";
 
 const { Title, Text } = Typography;
 
@@ -32,6 +33,28 @@ const Payment = () => {
     };
     fetchCourses();
   }, [id]);
+
+  const handleConfirmPayment = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8080/api/v1/registrations",
+        {
+          courseId: id,
+          userId: user.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      handlePaymentSuccess();
+      message.success("Payment successful!");
+    } catch (error) {
+      console.error("Failed to confirm payment:", error.response.data);
+      message.error(error.response.data.message);
+    }
+  };
 
   return (
     <div>
@@ -74,14 +97,15 @@ const Payment = () => {
                   Order ID: <span className="text-gray-600">#123456</span>
                 </Text>
                 <Text strong className="block text-sm">
-                  Please leave the transfer content as: {user.id} and {id}
+                  Please leave the transfer content as: {user.name} and{" "}
+                  {courses.name}
                 </Text>
               </div>
 
               <Button
                 type="primary"
                 className="mt-6 w-full bg-blue-500 hover:bg-blue-600"
-                onClick={handlePaymentSuccess}
+                onClick={handleConfirmPayment}
               >
                 Confirm Payment
               </Button>

@@ -9,44 +9,45 @@ import {
   Tag,
   Avatar,
   Input,
+  Rate,
+  message,
 } from "antd";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { useCallback } from "react";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-const mockCourse = {
-  comments: [
-    {
-      user: "John Doe",
-      content:
-        "This course is amazing! It helped me deepen my understanding of React.",
-      avatar: "https://via.placeholder.com/40",
-    },
-    {
-      user: "Jane Smith",
-      content:
-        "Great content, but would love more examples on state management.",
-      avatar: "https://via.placeholder.com/40",
-    },
-    {
-      user: "Alice Brown",
-      content:
-        "Fantastic course! Looking forward to more advanced React tutorials.",
-      avatar: "https://via.placeholder.com/40",
-    },
-  ],
-};
-
 const DetailsCourses = () => {
   const [comment, setComment] = useState("");
-  const [comments, setComments] = useState(mockCourse.comments);
-  const [courses, setCourses] = useState([]);
+  const [rate, setRate] = useState(0);
+  const [courses, setCourses] = useState(null);
   const [lessons, setLessons] = useState([]);
+  const [reviews, setReviews] = useState("");
+  const [isConfirm, setIsConfirm] = useState(false);
+
   const { id } = useParams();
+
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("token");
+  const user = jwtDecode(token);
+
+  const fetchComments = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/reviews/${id}`
+      );
+      setReviews(response.data.data);
+    } catch (e) {
+      console.error("Failed to fetch comments:", e);
+    }
+  }, [id]);
+
   useEffect(() => {
     const fetchCourses = async () => {
       try {
@@ -55,25 +56,52 @@ const DetailsCourses = () => {
         );
         setCourses(response.data.data);
         const responseLessons = await axios.get(
-          `http://localhost:8080/api/v1/lessons?courseId=${id}`
+          `http://localhost:8080/api/v1/lessons/all?courseId=${id}`
         );
         setLessons(responseLessons.data.data);
+        const responseConfirm = await axios.get(
+          `http://localhost:8080/api/v1/courses/${id}/confirm`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setIsConfirm(responseConfirm.data.success);
       } catch (e) {
         console.error("Failed to fetch courses:", e);
       }
     };
-    fetchCourses();
-  }, [id]);
 
-  const handleCommentSubmit = () => {
-    if (comment.trim()) {
-      const newComment = {
-        user: "New User",
-        content: comment,
-        avatar: "https://via.placeholder.com/40",
-      };
-      setComments([newComment, ...comments]);
-      setComment("");
+    fetchCourses();
+    fetchComments();
+  }, [fetchComments, id]);
+
+  const handleCommentSubmit = async () => {
+    if (comment.trim() && rate > 0) {
+      try {
+        await axios.post(
+          `http://localhost:8080/api/v1/reviews`,
+          {
+            userId: user.id,
+            courseId: id,
+            comment,
+            rating: rate,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setComment("");
+        setRate(0);
+        message.success("Comment submitted successfully!");
+        fetchComments();
+      } catch (e) {
+        console.error("Failed to submit comment:", e);
+        message.error("Failed to submit comment. Please try again.");
+      }
     }
   };
 
@@ -100,36 +128,52 @@ const DetailsCourses = () => {
         <Col xs={24} md={8}>
           <Card
             hoverable
-            cover={<img alt={courses.name} src={courses.image} />}
+            cover={<img alt={courses?.name} src={courses?.image} />}
             className="shadow-lg"
           >
-            <Title level={2}>{courses.name}</Title>
+            <Title level={2}>{courses?.name}</Title>
             <Text strong>
-              {courses.category} - {courses.level}
+              {courses?.category} - {courses?.level}
             </Text>
-            <div className="mt-2">
-              <Text strong className="text-lg">
-                ${courses.discountPrice || courses.price}
-              </Text>
-              {courses.discountPrice && (
-                <Text className="ml-2 text-gray-500 line-through">
-                  ${courses.price}
+            {!isConfirm && (
+              <div className="mt-2">
+                <Text strong className="text-lg">
+                  ${courses?.discountPrice || courses?.price}
                 </Text>
-              )}
+                {courses?.discountPrice && (
+                  <Text className="ml-2 text-gray-500 line-through">
+                    ${courses?.price}
+                  </Text>
+                )}
+              </div>
+            )}
+            <div>
+              <Text className="text-sm text-gray-700 mt-2">
+                {courses?.description}
+              </Text>
             </div>
-            <Text className="text-sm text-gray-700 mt-2">
-              {courses.description}
-            </Text>
 
             <div className="mt-4">
-              <Button
-                type="primary"
-                icon={<ShoppingCartOutlined />}
-                block
-                size="large"
-              >
-                Buy Now
-              </Button>
+              {isConfirm ? (
+                <Button
+                  onClick={() => navigate(`/user/courses/${id}/learn`)}
+                  type="primary"
+                  block
+                  size="large"
+                >
+                  Start studying now!
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => navigate(`/user/courses/payment/${id}`)}
+                  type="primary"
+                  icon={<ShoppingCartOutlined />}
+                  block
+                  size="large"
+                >
+                  Buy Now
+                </Button>
+              )}
             </div>
 
             {/* Course Tags */}
@@ -182,7 +226,6 @@ const DetailsCourses = () => {
         )}
       />
 
-      {/* Comments Section */}
       <Divider
         orientation="left"
         className="course-divider my-5 font-semibold text-xl"
@@ -191,23 +234,29 @@ const DetailsCourses = () => {
       </Divider>
 
       <List
-        dataSource={comments}
+        dataSource={reviews}
         renderItem={(comment) => (
           <List.Item className="p-3 border-b border-gray-200">
-            <div className="flex items-center">
-              <Avatar src={comment.avatar} className="mr-3" />
-              <div>
-                <Text strong className="block">
-                  {comment.user}
-                </Text>
-                <Text>{comment.content}</Text>
+            <div>
+              <div className="flex items-center mb-1">
+                <Avatar src={comment.avatar} className="mr-3" />
+                <div className="flex flex-col">
+                  <Text strong className="block mr-2">
+                    {comment.userId.name}
+                  </Text>
+                  <Rate
+                    disabled
+                    value={comment.rating}
+                    style={{ fontSize: "10px" }}
+                  />
+                </div>
               </div>
+              <Text>{comment.comment}</Text>
             </div>
           </List.Item>
         )}
       />
 
-      {/* Input for writing comments */}
       <Divider orientation="left" className="mt-5 font-semibold text-xl">
         Write a Comment
       </Divider>
@@ -218,10 +267,13 @@ const DetailsCourses = () => {
         placeholder="Write your comment here..."
         className="mb-4 border rounded-lg p-2"
       />
+      <div className="mb-4">
+        <Rate value={rate} onChange={(value) => setRate(value)} />
+      </div>
       <Button
         type="primary"
         onClick={handleCommentSubmit}
-        disabled={!comment.trim()}
+        disabled={!comment.trim() || rate === 0}
         className="w-full"
       >
         Submit Comment

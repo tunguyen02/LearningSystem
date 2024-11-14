@@ -5,6 +5,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
+import { jwtDecode } from "jwt-decode";
 
 const schema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -29,7 +30,10 @@ const Login = () => {
       );
       localStorage.setItem("token", response.data.token);
       message.success("Login successful");
-      navigate("/admin/dashboard");
+      const user = jwtDecode(response.data.token);
+      user.role === "Admin"
+        ? navigate("/admin/dashboard")
+        : navigate("/user/courses");
     } catch (error) {
       console.error("Login failed", error);
       message.error(error.response.data.message);

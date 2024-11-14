@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Card,
   List,
@@ -9,135 +9,154 @@ import {
   Avatar,
   Divider,
   Input,
+  Rate,
+  message,
 } from "antd";
 import ReactPlayer from "react-player";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-const lessonsData = [
-  {
-    id: 1,
-    title: "Lesson 1: Introduction",
-    content:
-      "This is the first lesson where we introduce the fundamentals of React.",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-  },
-  {
-    id: 2,
-    title: "Lesson 2: Advanced Concepts",
-    content:
-      "This lesson covers more advanced concepts in React, like hooks and context.",
-    videoUrl: "https://www.youtube.com/watch?v=JYdHkQ1FiLw",
-  },
-  {
-    id: 3,
-    title: "Lesson 3: Final Thoughts",
-    content:
-      "In this final lesson, we wrap up the course and discuss real-world applications.",
-    videoUrl: "https://www.youtube.com/watch?v=0y2btjlcpvY",
-  },
-];
-
-const initialCommentsData = [
-  {
-    id: 1,
-    user: "John Doe",
-    content:
-      "This lesson was really helpful! Thanks for the great explanation.",
-    avatar: "https://i.pravatar.cc/150?img=1",
-  },
-  {
-    id: 2,
-    user: "Jane Smith",
-    content:
-      "I struggled with hooks, but this lesson clarified a lot of things for me.",
-    avatar: "https://i.pravatar.cc/150?img=2",
-  },
-  {
-    id: 3,
-    user: "Mark Johnson",
-    content:
-      "Amazing course, I learned so much! Can you make a course on Redux?",
-    avatar: "https://i.pravatar.cc/150?img=3",
-  },
-  {
-    id: 4,
-    user: "Emily Davis",
-    content:
-      "Great final thoughts! I feel more confident now to apply React in real projects.",
-    avatar: "https://i.pravatar.cc/150?img=4",
-  },
-];
-
 const CoursesLearnLesson = () => {
-  const [currentLesson, setCurrentLesson] = useState(lessonsData[0]);
-  const [comments, setComments] = useState(initialCommentsData);
-  const [newComment, setNewComment] = useState("");
+  const [lessons, setLessons] = useState([]);
+  const [currentLesson, setCurrentLesson] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [comment, setComment] = useState("");
+  const [rate, setRate] = useState(0);
+  const [courses, setCourses] = useState(null);
+
+  const token = localStorage.getItem("token");
+  const user = jwtDecode(token);
+
+  const { id } = useParams();
+
+  // Hàm để lấy danh sách các bài học và khóa học
+  const fetchLessonsAndCourse = useCallback(async () => {
+    try {
+      const courseResponse = await axios.get(
+        `http://localhost:8080/api/v1/courses/${id}`
+      );
+      setCourses(courseResponse.data.data);
+
+      const lessonsResponse = await axios.get(
+        `http://localhost:8080/api/v1/lessons/all?courseId=${id}`
+      );
+      setLessons(lessonsResponse.data.data);
+      setCurrentLesson(lessonsResponse.data.data[0] || null);
+    } catch (error) {
+      console.error("Failed to fetch lessons or course:", error);
+      message.error("Failed to load lessons or course.");
+    }
+  }, [id]);
+
+  // Hàm để lấy bình luận
+  const fetchComments = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/v1/reviews/${id}`
+      );
+      setReviews(response.data.data);
+    } catch (error) {
+      console.error("Failed to fetch comments:", error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    fetchLessonsAndCourse();
+    fetchComments();
+  }, [fetchLessonsAndCourse, fetchComments]);
 
   const handleLessonClick = (lesson) => {
     setCurrentLesson(lesson);
   };
 
-  const handleCommentChange = (e) => {
-    setNewComment(e.target.value);
-  };
-
-  const handleCommentSubmit = () => {
-    if (newComment.trim()) {
-      const newCommentObj = {
-        id: comments.length + 1,
-        user: "Anonymous User",
-        content: newComment,
-        avatar: "https://i.pravatar.cc/150?img=5",
-      };
-      setComments([newCommentObj, ...comments]);
-      setNewComment("");
+  // Hàm gửi bình luận
+  const handleCommentSubmit = async () => {
+    if (comment.trim() && rate > 0) {
+      try {
+        await axios.post(
+          `http://localhost:8080/api/v1/reviews`,
+          {
+            userId: user.id,
+            courseId: id,
+            comment,
+            rating: rate,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setComment("");
+        setRate(0);
+        message.success("Comment submitted successfully!");
+        fetchComments();
+      } catch (e) {
+        console.error("Failed to submit comment:", e);
+        message.error("Failed to submit comment. Please try again.");
+      }
+    } else {
+      message.warning("Please provide a valid comment and rating.");
     }
   };
 
   return (
     <div className="courses-learn-container bg-gray-50 p-8">
       <div className="course-header mb-6">
-        <Title level={2}>Course Name: React Basics</Title>
+        <Title level={2}>Course Name: {courses?.name}</Title>
       </div>
 
       <Row gutter={[16, 16]}>
-        {/* Video Section */}
         <Col span={16}>
-          <Card className="rounded-lg shadow-lg p-4">
-            <ReactPlayer
-              url={currentLesson.videoUrl}
-              controls
-              width="100%"
-              height="400px"
-            />
-            <div className="lesson-content mt-6">
-              <Title level={3}>{currentLesson.title}</Title>
-              <Text>{currentLesson.content}</Text>
+          <Card className="rounded-lg shadow-lg p-4 pt-0">
+            <div className="lesson-content">
+              <Title level={3}>
+                Lesson {currentLesson?.order}: {currentLesson?.title}
+              </Title>
+              <ReactPlayer
+                url={currentLesson?.videos[0]?.url}
+                controls
+                width="100%"
+                height="400px"
+              />
+              <Title className="mt-3" level={4}>
+                {currentLesson?.videos[0]?.title}
+              </Title>{" "}
+              <Text>{currentLesson?.content}</Text>
             </div>
+
             <div className="comments-section mt-8">
               <Title level={4}>Comments</Title>
 
               {/* Comments List */}
               <List
-                dataSource={comments}
-                renderItem={(comment) => (
+                dataSource={reviews}
+                renderItem={(review) => (
                   <List.Item className="p-3 border-b border-gray-200">
-                    <div className="flex items-center">
-                      <Avatar src={comment.avatar} className="mr-3" />
-                      <div>
-                        <Text strong className="block">
-                          {comment.user}
-                        </Text>
-                        <Text>{comment.content}</Text>
+                    <div>
+                      <div className="flex items-center mb-1">
+                        <Avatar src={review.avatar} className="mr-3" />
+                        <div className="flex flex-col">
+                          <Text strong className="block mr-2">
+                            {review.userId.name}
+                          </Text>
+                          <Rate
+                            disabled
+                            value={review.rating}
+                            style={{ fontSize: "10px" }}
+                          />
+                        </div>
                       </div>
+                      <Text>{review.comment}</Text>
                     </div>
                   </List.Item>
                 )}
               />
 
-              {/* Comment Input */}
               <Divider
                 orientation="left"
                 className="mt-5 font-semibold text-xl"
@@ -145,16 +164,19 @@ const CoursesLearnLesson = () => {
                 Write a Comment
               </Divider>
               <TextArea
-                value={newComment}
-                onChange={handleCommentChange}
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
                 rows={4}
                 placeholder="Write your comment here..."
                 className="mb-4 border rounded-lg p-2"
               />
+              <div className="mb-4">
+                <Rate value={rate} onChange={(value) => setRate(value)} />
+              </div>
               <Button
                 type="primary"
                 onClick={handleCommentSubmit}
-                disabled={!newComment.trim()}
+                disabled={!comment.trim() || rate === 0}
                 className="w-full"
               >
                 Submit Comment
@@ -167,15 +189,15 @@ const CoursesLearnLesson = () => {
         <Col span={8}>
           <Card title="Lessons List" bordered className="rounded-lg shadow-lg">
             <List
-              dataSource={lessonsData}
+              dataSource={lessons || []}
               renderItem={(lesson) => (
-                <List.Item key={lesson.id}>
+                <List.Item key={lesson?._id}>
                   <Button
                     type="link"
                     onClick={() => handleLessonClick(lesson)}
                     className="text-left w-full hover:bg-blue-100 rounded-lg transition duration-200"
                   >
-                    {lesson.title}
+                    Lesson {lesson?.order}: {lesson?.title}
                   </Button>
                 </List.Item>
               )}

@@ -3,9 +3,9 @@ import { useForm, Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { UploadOutlined } from "@ant-design/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const schema = yup.object().shape({
   name: yup.string().required("Course name is required"),
@@ -22,48 +22,102 @@ const schema = yup.object().shape({
   description: yup.string().required("Description is required"),
 });
 
-const CreateCourse = () => {
+const UpdateCourse = () => {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(false);
+
+  const { id } = useParams();
+
+  const [imageFile, setImageFile] = useState(null);
+  const [urlImage, setUrlImage] = useState(null);
+  const [dataUpdate, setDataUpdate] = useState(null);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const [imageFile, setImageFile] = useState(null);
-  const [isImageUploaded, setIsImageUploaded] = useState(false);
+  useEffect(() => {
+    const fetchCourse = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8080/api/v1/courses/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setDataUpdate(response.data.data);
+        reset({
+          name: response.data.data.name,
+          category: response.data.data.category,
+          level: response.data.data.level,
+          price: response.data.data.price,
+          discountPrice: response.data.data.discountPrice,
+          description: response.data.data.description,
+          image: response.data.data.image,
+        });
+        setUrlImage(response.data.data.image);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    fetchCourse();
+  }, [id, reset]);
 
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("category", data.category);
-      formData.append("level", data.level);
-      formData.append("price", data.price);
-      formData.append("discountPrice", data.discountPrice);
-      formData.append("description", data.description);
-      formData.append("image", imageFile);
 
-      const response = await axios.post(
-        "http://localhost:8080/api/v1/courses",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
+      let payload;
+      let config = {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      };
+
+      if (imageFile) {
+        payload = new FormData();
+        data.name !== dataUpdate.name && payload.append("name", data.name);
+        data.category !== dataUpdate.category &&
+          payload.append("category", data.category);
+        data.level !== dataUpdate.level && payload.append("level", data.level);
+        data.price !== dataUpdate.price && payload.append("price", data.price);
+        data.discountPrice !== dataUpdate.discountPrice &&
+          payload.append("discountPrice", data.discountPrice);
+        data.description !== dataUpdate.description &&
+          payload.append("description", data.description);
+        payload.append("image", imageFile);
+
+        config.headers["Content-Type"] = "multipart/form-data";
+      } else {
+        payload = {};
+        data.name !== dataUpdate.name && (payload.name = data.name);
+        data.category !== dataUpdate.category &&
+          (payload.category = data.category);
+        data.level !== dataUpdate.level && (payload.level = data.level);
+        data.price !== dataUpdate.price && (payload.price = data.price);
+        data.discountPrice !== dataUpdate.discountPrice &&
+          (payload.discountPrice = data.discountPrice);
+        data.description !== dataUpdate.description &&
+          (payload.description = data.description);
+      }
+
+      await axios.put(
+        `http://localhost:8080/api/v1/courses/${id}`,
+        payload,
+        config
       );
 
-      message.success("Successfully created course!");
-
-      navigate(`/admin/courses/${response.data.data._id}/lessons`);
+      message.success("Successfully updated course!");
+      navigate(`/admin/courses`);
     } catch (e) {
       console.error(e);
       message.error(e.response?.data?.message || "An error occurred");
@@ -75,14 +129,15 @@ const CreateCourse = () => {
   const handleImageChange = (info) => {
     if (info.file.status !== "uploading") {
       setImageFile(info.file);
-      setIsImageUploaded(true);
+      const url = URL.createObjectURL(info.file);
+      setUrlImage(url);
     }
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg">
       <h1 className="text-3xl font-semibold text-gray-700 mb-8 text-center">
-        Create New Course
+        Update New Course
       </h1>
       <form onSubmit={handleSubmit(onSubmit)} className="flex gap-10">
         <div className="grid grid-cols-2 gap-6 w-full">
@@ -180,6 +235,17 @@ const CreateCourse = () => {
             )}
           />
 
+          <div className="flex flex-col gap-1">
+            <label className="font-semibold text-gray-800">Lessons:</label>
+            <Button
+              onClick={() => navigate(`/admin/courses/${id}/lessons`)}
+              size="large"
+              type="primary"
+            >
+              Details
+            </Button>
+          </div>
+
           <Controller
             name="description"
             control={control}
@@ -205,12 +271,12 @@ const CreateCourse = () => {
         </div>
 
         <div className="flex flex-col justify-between items-center">
-          {isImageUploaded ? (
+          {urlImage ? (
             <div className="flex flex-col items-center">
               <Image
                 width={256}
                 height={160}
-                src={URL.createObjectURL(imageFile)}
+                src={urlImage}
                 alt="Course Image"
               />
               <Upload
@@ -266,4 +332,4 @@ const CreateCourse = () => {
   );
 };
 
-export default CreateCourse;
+export default UpdateCourse;

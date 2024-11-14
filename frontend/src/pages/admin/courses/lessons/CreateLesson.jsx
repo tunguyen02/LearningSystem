@@ -1,47 +1,97 @@
-import { Button, Input } from "antd";
+import { Button, Input, message } from "antd";
 import TextArea from "antd/es/input/TextArea";
-import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useForm, Controller } from "react-hook-form";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import axios from "axios";
+
+// Validation schema with Yup
+const schema = Yup.object().shape({
+  order: Yup.number()
+    .required("Order is required")
+    .positive("Order must be positive"),
+  title: Yup.string().required("Title is required"),
+  content: Yup.string().required("Content is required"),
+  videoTitle: Yup.string().required("Video Title is required"),
+  videoUrl: Yup.string()
+    .required("Video URL is required")
+    .url("Please enter a valid URL"),
+});
 
 const CreateLesson = () => {
-  const [formValues, setFormValues] = useState({
-    courseId: "",
-    order: "",
-    title: "",
-    content: "",
-    videoTitle: "",
-    videoUrl: "",
+  const { id } = useParams();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      courseId: id,
+      order: null,
+      title: "",
+      content: "",
+      videoTitle: "",
+      videoUrl: "",
+    },
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues((prevValues) => ({
-      ...prevValues,
-      [name]: value,
-    }));
-  };
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form values:", formValues);
+  const onSubmit = async (data) => {
+    try {
+      const dataSubmit = {
+        courseId: id,
+        order: data.order,
+        title: data.title,
+        content: data.content,
+        videos: [
+          {
+            title: data.videoTitle,
+            url: data.videoUrl,
+          },
+        ],
+      };
+      await axios.post(
+        "http://localhost:8080/api/v1/lessons/create",
+        dataSubmit,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      console.log(data);
+      message.success("Lesson created successfully");
+      reset();
+    } catch (err) {
+      console.error(err);
+      message.error("Failed to create lesson");
+    }
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg">
-      <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
+      <h1 className="text-3xl font-semibold text-gray-800 mb-6 text-center md:text-4xl">
         Create New Lesson
-      </h2>
-      <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-6">
+      </h1>
+      <form
+        className="grid grid-cols-2 gap-6"
+        onSubmit={handleSubmit(onSubmit)}
+      >
         {/* Course ID */}
         <div className="flex flex-col gap-1">
           <label htmlFor="courseId" className="text-gray-700 font-medium">
             Course ID
           </label>
           <Input
+            value={id}
+            disabled
             type="text"
             id="courseId"
             name="courseId"
-            value={formValues.courseId}
-            onChange={handleChange}
             placeholder="Enter Course ID"
             size="large"
             required
@@ -53,16 +103,23 @@ const CreateLesson = () => {
           <label htmlFor="order" className="text-gray-700 font-medium">
             Order
           </label>
-          <Input
-            type="number"
-            id="order"
+          <Controller
             name="order"
-            value={formValues.order}
-            onChange={handleChange}
-            placeholder="Enter Order"
-            size="large"
-            required
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type="number"
+                id="order"
+                placeholder="Enter Order"
+                size="large"
+                required
+              />
+            )}
           />
+          {errors.order && (
+            <p className="text-red-500 text-sm">{errors.order.message}</p>
+          )}
         </div>
 
         {/* Title */}
@@ -70,16 +127,23 @@ const CreateLesson = () => {
           <label htmlFor="title" className="text-gray-700 font-medium">
             Lesson Title
           </label>
-          <Input
-            type="text"
-            id="title"
+          <Controller
             name="title"
-            value={formValues.title}
-            onChange={handleChange}
-            placeholder="Enter Lesson Title"
-            size="large"
-            required
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type="text"
+                id="title"
+                placeholder="Enter Lesson Title"
+                size="large"
+                required
+              />
+            )}
           />
+          {errors.title && (
+            <p className="text-red-500 text-sm">{errors.title.message}</p>
+          )}
         </div>
 
         {/* Content */}
@@ -87,16 +151,23 @@ const CreateLesson = () => {
           <label htmlFor="content" className="text-gray-700 font-medium">
             Content
           </label>
-          <TextArea
-            id="content"
+          <Controller
             name="content"
-            value={formValues.content}
-            onChange={handleChange}
-            placeholder="Enter Lesson Content"
-            size="large"
-            rows="4"
-            required
-          ></TextArea>
+            control={control}
+            render={({ field }) => (
+              <TextArea
+                {...field}
+                id="content"
+                placeholder="Enter Lesson Content"
+                size="large"
+                rows="4"
+                required
+              />
+            )}
+          />
+          {errors.content && (
+            <p className="text-red-500 text-sm">{errors.content.message}</p>
+          )}
         </div>
 
         {/* Video Title */}
@@ -104,16 +175,23 @@ const CreateLesson = () => {
           <label htmlFor="videoTitle" className="text-gray-700 font-medium">
             Video Title
           </label>
-          <Input
-            type="text"
-            id="videoTitle"
+          <Controller
             name="videoTitle"
-            value={formValues.videoTitle}
-            onChange={handleChange}
-            placeholder="Enter Video Title"
-            size="large"
-            required
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type="text"
+                id="videoTitle"
+                placeholder="Enter Video Title"
+                size="large"
+                required
+              />
+            )}
           />
+          {errors.videoTitle && (
+            <p className="text-red-500 text-sm">{errors.videoTitle.message}</p>
+          )}
         </div>
 
         {/* Video URL */}
@@ -121,23 +199,44 @@ const CreateLesson = () => {
           <label htmlFor="videoUrl" className="text-gray-700 font-medium">
             Video URL
           </label>
-          <Input
-            type="url"
-            id="videoUrl"
+          <Controller
             name="videoUrl"
-            value={formValues.videoUrl}
-            onChange={handleChange}
-            placeholder="Enter Video URL"
-            size="large"
-            required
+            control={control}
+            render={({ field }) => (
+              <Input
+                {...field}
+                type="url"
+                id="videoUrl"
+                placeholder="Enter Video URL"
+                size="large"
+                required
+              />
+            )}
           />
+          {errors.videoUrl && (
+            <p className="text-red-500 text-sm">{errors.videoUrl.message}</p>
+          )}
         </div>
 
         {/* Submit Button */}
         <div className="col-span-2">
-          <Button size="large" type="primary" className="w-full">
-            Create Lesson
-          </Button>
+          <div className="flex gap-10">
+            <Button
+              onClick={() => navigate(`/admin/courses/${id}/lessons`)}
+              size="large"
+              className="w-full"
+            >
+              Back
+            </Button>
+            <Button
+              size="large"
+              type="primary"
+              className="w-full"
+              htmlType="submit"
+            >
+              Create Lesson
+            </Button>
+          </div>
         </div>
       </form>
     </div>

@@ -1,27 +1,62 @@
-import { Button, Input } from "antd";
+import { Button, Input, message, Modal } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 import { CiCirclePlus } from "react-icons/ci";
-import { IoCreateOutline, IoEyeOutline, IoTrashOutline } from "react-icons/io5";
+import { IoCreateOutline, IoTrashOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 
 const Courses = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [courseIdToDelete, setCourseIdToDelete] = useState(null);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/v1/courses");
+      setCourses(response.data.data.courses);
+    } catch (e) {
+      console.error("Failed to fetch courses:", e);
+    }
+  };
+
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8080/api/v1/courses"
-        );
-        setCourses(response.data.data.courses);
-      } catch (e) {
-        console.error("Failed to fetch courses:", e);
-      }
-    };
     fetchCourses();
   }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:8080/api/v1/courses/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      fetchCourses();
+      message.success("Course deleted successfully!");
+    } catch (e) {
+      console.error("Failed to delete course:", e);
+      message.error("Failed to delete course!");
+    }
+  };
+
+  const showDeleteConfirm = (id) => {
+    setCourseIdToDelete(id);
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    if (courseIdToDelete) {
+      handleDelete(courseIdToDelete);
+      setIsModalVisible(false);
+      setCourseIdToDelete(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setCourseIdToDelete(null);
+  };
 
   return (
     <div className="flex flex-col gap-4 px-2">
@@ -80,21 +115,33 @@ const Courses = () => {
               <td className="text-center">
                 <Button
                   className="border-none"
-                  icon={<IoEyeOutline size={20} />}
-                />
-                <Button
-                  className="border-none"
                   icon={<IoCreateOutline size={20} />}
+                  onClick={() =>
+                    navigate(`/admin/courses/update/${course._id}`)
+                  }
                 />
                 <Button
                   className="border-none"
                   icon={<IoTrashOutline size={20} />}
+                  onClick={() => showDeleteConfirm(course._id)}
                 />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {/* Modal for confirmation */}
+      <Modal
+        title="Delete Course"
+        open={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Yes"
+        cancelText="No"
+      >
+        <p>Are you sure you want to delete this course?</p>
+      </Modal>
     </div>
   );
 };
