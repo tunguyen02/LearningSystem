@@ -10,7 +10,7 @@ const lessonController = {
         data: lesson,
       });
     } catch (error) {
-      res.status(500).json({
+      res.status(400).json({
         success: false,
         message: "Error creating lesson: " + error.message,
       });
@@ -21,28 +21,13 @@ const lessonController = {
     try {
       const { courseId } = req.query;
       const filter = courseId ? { courseId } : {};
-      const lessons = await LessonModel.find(filter).populate("courseId");
-      res.json({
-        success: true,
-        data: lessons,
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Error fetching lessons: " + error.message,
-      });
-    }
-  },
-  getAllLessons: async (req, res) => {
-    try {
-      const { courseId } = req.query;
-      const filter = courseId ? { courseId } : {};
       console.log(filter);
       const lessons = await LessonModel.find(filter).populate("courseId");
       console.log(lessons);
 
       res.json({
         success: true,
+        result: lessons.length,
         data: lessons,
       });
     } catch (error) {
