@@ -78,9 +78,13 @@ const courseController = {
     },
 
     updateCourse: async (req, res) => {
+        let imageUrl = null;
+        if (req.file) {
+            imageUrl = await uploadController.uploadFile(req.file);
+        }
+
         try {
             const course = await CourseModel.findById(req.params.id);
-
             if (!course) {
                 return res.status(404).json({
                     success: false,
@@ -89,15 +93,15 @@ const courseController = {
             }
 
             course.name = req.body.name || course.name;
+            course.level = req.body.level || course.level;
+            course.category = req.body.category || course.category;
             course.price = req.body.price || course.price;
             course.discountPrice = req.body.discountPrice || course.discountPrice;
-
-            if (req.body.image) {
-                course.image = req.body.image;
-            }
-
             course.description = req.body.description || course.description;
 
+            if (imageUrl) {
+                course.image = imageUrl;
+            }
             const updatedCourse = await course.save();
 
             res.json({
@@ -106,12 +110,13 @@ const courseController = {
             });
 
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: error.message
             });
         }
     },
+
 
     deleteCourse: async (req, res) => {
         try {
@@ -128,7 +133,7 @@ const courseController = {
             })
 
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: error.message
             })
@@ -153,7 +158,7 @@ const courseController = {
                 message: "Course is not confirmed"
             })
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: error.message
             })
