@@ -12,6 +12,6 @@ CourseRouter.get('/:id', courseController.getCourseById);
 CourseRouter.post('/', authMiddleware, upload.single('image'), courseController.createCourse);
 CourseRouter.put('/:id', authMiddleware, courseController.updateCourse);
 CourseRouter.delete('/:id', authMiddleware, courseController.deleteCourse);
-CourseRouter.get('/:id/confirm', courseController.isCourseConfirmed);
+CourseRouter.get('/:id/confirm', authMiddleware, courseController.isCourseConfirmed);
 
 export default CourseRouter;
