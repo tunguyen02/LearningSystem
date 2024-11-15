@@ -169,19 +169,32 @@ const courseController = {
     getAllCourseByUser: async (req, res) => {
         try {
             const userId = req.user._id;
-            const courses = await RegisterCourseModel.find({ userId }).populate("courseId", "name");
+
+            const approvedCourses = await RegisterCourseModel
+                .find({ userId, status: 'approved' })
+                .populate('courseId');
+
+            const pendingCourses = await RegisterCourseModel
+                .find({ userId, status: 'pending' })
+                .populate('courseId');
+
+            const cancelledCourses = await RegisterCourseModel
+                .find({ userId, status: 'cancelled' })
+                .populate('courseId');
+
             res.json({
                 success: true,
-                result: courses.length,
                 data: {
-                    courses
+                    approved: approvedCourses,
+                    pending: pendingCourses,
+                    cancelled: cancelledCourses
                 }
-            })
+            });
         } catch (error) {
             res.status(400).json({
                 success: false,
                 message: error.message
-            })
+            });
         }
     }
 };

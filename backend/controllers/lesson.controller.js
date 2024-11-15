@@ -21,9 +21,7 @@ const lessonController = {
         try {
             const { courseId } = req.query;
             const filter = courseId ? { courseId } : {};
-            console.log(filter);
-            const lessons = await LessonModel.find(filter).populate('courseId');
-            console.log(lessons);
+            const lessons = await LessonModel.find(filter).sort('order').populate('courseId');
 
             res.json({
                 success: true,
@@ -31,7 +29,7 @@ const lessonController = {
                 data: lessons
             });
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: 'Error fetching lessons: ' + error.message
             });
@@ -52,7 +50,7 @@ const lessonController = {
                 data: lesson
             });
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: 'Error fetching lesson: ' + error.message
             });
@@ -94,7 +92,7 @@ const lessonController = {
                 message: 'Lesson deleted successfully'
             });
         } catch (error) {
-            res.status(500).json({
+            res.status(400).json({
                 success: false,
                 message: 'Error deleting lesson: ' + error.message
             });
