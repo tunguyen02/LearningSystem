@@ -10,7 +10,7 @@ CourseRouter.get('/my-courses', authMiddleware, courseController.getAllCourseByU
 CourseRouter.get('/', courseController.getAllCourses);
 CourseRouter.get('/:id', courseController.getCourseById);
 CourseRouter.post('/', authMiddleware, checkAdmin, upload.single('image'), courseController.createCourse);
-CourseRouter.put('/:id', authMiddleware, checkAdmin, courseController.updateCourse);
+CourseRouter.put('/:id', authMiddleware, checkAdmin, upload.single('image'), courseController.updateCourse);
 CourseRouter.delete('/:id', authMiddleware, checkAdmin, courseController.deleteCourse);
 CourseRouter.get('/:id/confirm', authMiddleware, courseController.isCourseConfirmed);
 
