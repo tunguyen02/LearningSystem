@@ -17,6 +17,7 @@ import CoursesLearn from "./pages/user/courses/CoursesLearn";
 import Payment from "./pages/user/courses/Payment";
 import PrivateRouter from "./pages/auth/PrivateRouter";
 import UpdateCourse from "./pages/admin/courses/UpdateCourse";
+import CoursesOrderUser from "./pages/user/order/CoursesOrderUser";
 
 const App = () => {
   return (
@@ -49,6 +50,7 @@ const App = () => {
         }
       >
         <Route path="courses" element={<Courses />} />
+        <Route path="course-order" element={<CoursesOrderUser />} />
         <Route path="courses/:id" element={<DetailsCourses />} />
         <Route path="courses/payment/:id" element={<Payment />} />
         <Route path="courses/:id/learn" element={<CoursesLearn />} />
