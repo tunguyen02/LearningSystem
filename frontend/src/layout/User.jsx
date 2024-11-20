@@ -1,13 +1,22 @@
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Menu from "./Menu";
-import { IoReceiptOutline } from "react-icons/io5";
-import { IoBookOutline } from "react-icons/io5";
+import {
+  IoReceiptOutline,
+  IoBookOutline,
+  IoHomeOutline,
+} from "react-icons/io5";
 
 const data = [
   {
+    icon: <IoHomeOutline size={25} />,
+    title: "Home",
+    path: "/user/home",
+  },
+  {
     icon: <IoBookOutline size={25} />,
-    title: "Courses",
+    title: "All Courses",
     path: "/user/courses",
   },
   {
@@ -18,11 +27,16 @@ const data = [
 ];
 
 const User = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <div>
-      <Navbar />
-      <Menu data={data} />
-      <div className="ml-60 mt-16 p-5">
+      <Navbar onToggleMenu={toggleMenu} />
+      <Menu data={data} isOpen={isMenuOpen} onClose={closeMenu} />
+      <div className="bg-gray-100 p-5 pt-24 min-h-screen">
         <Outlet />
       </div>
     </div>

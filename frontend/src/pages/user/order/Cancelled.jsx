@@ -36,7 +36,7 @@ const Cancelled = () => {
   return (
     <div className="p-5">
       <Title level={2} className="mb-5">
-        Our Courses
+        Cancelled Courses
       </Title>
       <div className="mb-5">
         <Input.Search

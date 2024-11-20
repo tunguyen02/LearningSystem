@@ -33,7 +33,6 @@ const CoursesLearnLesson = () => {
 
   const { id } = useParams();
 
-  // Hàm để lấy danh sách các bài học và khóa học
   const fetchLessonsAndCourse = useCallback(async () => {
     try {
       const courseResponse = await axios.get(
@@ -52,7 +51,6 @@ const CoursesLearnLesson = () => {
     }
   }, [id]);
 
-  // Hàm để lấy bình luận
   const fetchComments = useCallback(async () => {
     try {
       const response = await axios.get(
@@ -73,7 +71,6 @@ const CoursesLearnLesson = () => {
     setCurrentLesson(lesson);
   };
 
-  // Hàm gửi bình luận
   const handleCommentSubmit = async () => {
     if (comment.trim() && rate > 0) {
       try {

@@ -21,6 +21,7 @@ import Layout from "./pages/user/order/Layout";
 import Approved from "./pages/user/order/Approved";
 import Cancelled from "./pages/user/order/Cancelled";
 import Pending from "./pages/user/order/Pending";
+import Home from "./pages/user/home/Home";
 
 const App = () => {
   return (
@@ -52,6 +53,7 @@ const App = () => {
           </PrivateRouter>
         }
       >
+        <Route path="home" element={<Home />} />
         <Route path="courses" element={<Courses />} />
         <Route path="course-order" element={<Layout />}>
           <Route path="" element={<Navigate to="approved" />} />
@@ -62,6 +64,9 @@ const App = () => {
         <Route path="courses/:id" element={<DetailsCourses />} />
         <Route path="courses/payment/:id" element={<Payment />} />
         <Route path="courses/:id/learn" element={<CoursesLearn />} />
+      </Route>
+      <Route path="/" element={<User />}>
+        <Route path="" element={<Home />} />
       </Route>
       <Route path="*" element={<Navigate to="/auth/login" />} />
     </Routes>

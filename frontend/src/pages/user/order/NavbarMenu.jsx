@@ -1,22 +1,23 @@
 import {
-  IoCheckmarkCircleOutline,
-  IoFileTrayFullOutline,
+  IoCheckmarkCircle,
+  IoCloseCircle,
+  IoTimeOutline,
 } from "react-icons/io5";
 import { NavLink } from "react-router-dom";
 
 const data = [
   {
-    icon: <IoCheckmarkCircleOutline size={25} />,
+    icon: <IoCheckmarkCircle size={25} />,
     title: "Approved",
     path: "/user/course-order/approved",
   },
   {
-    icon: <IoFileTrayFullOutline size={25} />,
+    icon: <IoCloseCircle size={25} />,
     title: "Cancelled",
     path: "/user/course-order/cancelled",
   },
   {
-    icon: <IoFileTrayFullOutline size={25} />,
+    icon: <IoTimeOutline size={25} />,
     title: "Pending",
     path: "/user/course-order/pending",
   },
