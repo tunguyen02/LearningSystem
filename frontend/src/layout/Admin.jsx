@@ -3,7 +3,6 @@ import Navbar from "./Navbar";
 import Menu from "./Menu";
 import { IoGridOutline, IoReceiptOutline } from "react-icons/io5";
 import { IoPeopleOutline } from "react-icons/io5";
-import { IoSettingsOutline } from "react-icons/io5";
 import { IoBookOutline } from "react-icons/io5";
 
 const data = [
@@ -26,11 +25,6 @@ const data = [
     icon: <IoReceiptOutline size={25} />,
     title: "Course Order",
     path: "/admin/course-order",
-  },
-  {
-    icon: <IoSettingsOutline size={25} />,
-    title: "Setting",
-    path: "/admin/setting",
   },
 ];
 

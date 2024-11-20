@@ -1,16 +1,10 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "./Navbar";
 import Menu from "./Menu";
-import { IoPersonOutline, IoReceiptOutline } from "react-icons/io5";
-import { IoSettingsOutline } from "react-icons/io5";
+import { IoReceiptOutline } from "react-icons/io5";
 import { IoBookOutline } from "react-icons/io5";
 
 const data = [
-  {
-    icon: <IoPersonOutline size={25} />,
-    title: "Profile",
-    path: "/user/profile",
-  },
   {
     icon: <IoBookOutline size={25} />,
     title: "Courses",
@@ -20,11 +14,6 @@ const data = [
     icon: <IoReceiptOutline size={25} />,
     title: "Course Order",
     path: "/user/course-order",
-  },
-  {
-    icon: <IoSettingsOutline size={25} />,
-    title: "Setting",
-    path: "/user/setting",
   },
 ];
 

@@ -17,7 +17,10 @@ import CoursesLearn from "./pages/user/courses/CoursesLearn";
 import Payment from "./pages/user/courses/Payment";
 import PrivateRouter from "./pages/auth/PrivateRouter";
 import UpdateCourse from "./pages/admin/courses/UpdateCourse";
-import CoursesOrderUser from "./pages/user/order/CoursesOrderUser";
+import Layout from "./pages/user/order/Layout";
+import Approved from "./pages/user/order/Approved";
+import Cancelled from "./pages/user/order/Cancelled";
+import Pending from "./pages/user/order/Pending";
 
 const App = () => {
   return (
@@ -50,7 +53,12 @@ const App = () => {
         }
       >
         <Route path="courses" element={<Courses />} />
-        <Route path="course-order" element={<CoursesOrderUser />} />
+        <Route path="course-order" element={<Layout />}>
+          <Route path="" element={<Navigate to="approved" />} />
+          <Route path="approved" element={<Approved />} />
+          <Route path="cancelled" element={<Cancelled />} />
+          <Route path="pending" element={<Pending />} />
+        </Route>
         <Route path="courses/:id" element={<DetailsCourses />} />
         <Route path="courses/payment/:id" element={<Payment />} />
         <Route path="courses/:id/learn" element={<CoursesLearn />} />
