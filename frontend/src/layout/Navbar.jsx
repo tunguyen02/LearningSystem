@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
-import { Button, Input } from "antd";
-import { CiSearch } from "react-icons/ci";
+import { Button } from "antd";
 import { CiBellOn } from "react-icons/ci";
 import { PiSignOutBold } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
@@ -26,12 +25,6 @@ const Navbar = ({ onToggleMenu }) => {
           <img src="/public/logo.svg" alt="Logo" className="h-10" />
           <p className="font-semibold text-lg">Byway</p>
         </div>
-        <p className="cursor-pointer">Categories</p>
-        <Input
-          prefix={<CiSearch size={20} />}
-          placeholder="Search courses"
-          className="w-64"
-        />
       </div>
       {check ? (
         <div className="flex items-center gap-x-4">

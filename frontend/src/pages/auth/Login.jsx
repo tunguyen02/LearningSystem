@@ -33,7 +33,7 @@ const Login = () => {
       const user = jwtDecode(response.data.token);
       user.role === "Admin"
         ? navigate("/admin/dashboard")
-        : navigate("/user/courses");
+        : navigate("/user/home");
     } catch (error) {
       console.error("Login failed", error);
       message.error(error.response.data.message);
