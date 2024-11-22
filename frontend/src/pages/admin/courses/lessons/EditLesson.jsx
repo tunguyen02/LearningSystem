@@ -5,6 +5,7 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import axios from "axios";
+import { useEffect } from "react";
 
 // Validation schema with Yup
 const schema = Yup.object().shape({
@@ -23,8 +24,9 @@ const schema = Yup.object().shape({
     .min(1, "At least one video is required"),
 });
 
-const CreateLesson = () => {
+const EditLesson = () => {
   const { id } = useParams();
+  const { idLesson } = useParams();
   const {
     control,
     handleSubmit,
@@ -48,6 +50,24 @@ const CreateLesson = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (idLesson) {
+      const fetchLesson = async () => {
+        try {
+          const response = await axios.get(
+            `http://localhost:8080/api/v1/lessons/detail/${idLesson}`
+          );
+          const lesson = response.data.data;
+          reset(lesson); // Đặt toàn bộ dữ liệu vào form
+        } catch (err) {
+          console.error(err);
+          message.error("Failed to fetch lesson");
+        }
+      };
+      fetchLesson();
+    }
+  }, [idLesson, reset]);
+
   const onSubmit = async (data) => {
     try {
       const dataSubmit = {
@@ -57,8 +77,8 @@ const CreateLesson = () => {
         content: data.content,
         videos: data.videos,
       };
-      await axios.post(
-        "http://localhost:8080/api/v1/lessons/create",
+      await axios.put(
+        `http://localhost:8080/api/v1/lessons/${idLesson}`,
         dataSubmit,
         {
           headers: {
@@ -66,18 +86,18 @@ const CreateLesson = () => {
           },
         }
       );
-      message.success("Lesson created successfully");
-      reset();
+      message.success("Lesson updated successfully");
+      navigate(`/admin/courses/${id}/lessons`);
     } catch (err) {
       console.error(err);
-      message.error("Failed to create lesson");
+      message.error("Failed to update lesson");
     }
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6 bg-white rounded-lg">
       <h1 className="text-3xl font-semibold text-gray-800 mb-6 text-center md:text-4xl">
-        Create New Lesson
+        Update New Lesson
       </h1>
       <form
         className="grid grid-cols-2 gap-6"
@@ -176,7 +196,7 @@ const CreateLesson = () => {
         <div className="col-span-2">
           <label className="text-gray-700 font-medium">Videos</label>
           {fields.map((video, index) => (
-            <div key={video.id} className="flex gap-4 mb-4">
+            <div key={video.id || index} className="flex gap-4 mb-4">
               <Controller
                 name={`videos[${index}].title`}
                 control={control}
@@ -236,7 +256,7 @@ const CreateLesson = () => {
               className="w-full"
               htmlType="submit"
             >
-              Create Lesson
+              Update Lesson
             </Button>
           </div>
         </div>
@@ -245,4 +265,4 @@ const CreateLesson = () => {
   );
 };
 
-export default CreateLesson;
+export default EditLesson;

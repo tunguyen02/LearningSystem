@@ -18,6 +18,10 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { useCallback } from "react";
+import { Collapse } from "antd";
+import { DownOutlined } from "@ant-design/icons";
+
+const { Panel } = Collapse;
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -110,18 +114,30 @@ const DetailsCourses = () => {
       <Row gutter={16}>
         <Col xs={24} md={16}>
           <Card title="Lessons" className="shadow-lg">
-            <List
-              bordered
-              dataSource={lessons}
-              renderItem={(lesson) => (
-                <List.Item>
-                  <Text>
-                    {lesson.order}. {lesson.title} -{" "}
-                    <Text type="secondary">(Demo)</Text>
-                  </Text>
-                </List.Item>
+            <Collapse
+              accordion
+              expandIcon={({ isActive }) => (
+                <DownOutlined rotate={isActive ? 180 : 0} />
               )}
-            />
+              className="lesson-collapse"
+            >
+              {lessons.map((lesson) => (
+                <Panel
+                  header={`${lesson.order}. ${lesson.title}`}
+                  key={lesson.id}
+                >
+                  <List
+                    bordered
+                    dataSource={lesson.videos || []}
+                    renderItem={(video) => (
+                      <List.Item>
+                        <Text>{video.title}</Text>
+                      </List.Item>
+                    )}
+                  />
+                </Panel>
+              ))}
+            </Collapse>
           </Card>
         </Col>
 

@@ -22,6 +22,7 @@ import Approved from "./pages/user/order/Approved";
 import Cancelled from "./pages/user/order/Cancelled";
 import Pending from "./pages/user/order/Pending";
 import Home from "./pages/user/home/Home";
+import EditLesson from "./pages/admin/courses/lessons/EditLesson";
 
 const App = () => {
   return (
@@ -44,6 +45,10 @@ const App = () => {
         <Route path="courses/update/:id" element={<UpdateCourse />} />
         <Route path="courses/:id/lessons" element={<Lessons />} />
         <Route path="courses/:id/lessons/create" element={<CreateLesson />} />
+        <Route
+          path="courses/:id/lessons/update/:idLesson"
+          element={<EditLesson />}
+        />
       </Route>
       <Route
         path="/user"

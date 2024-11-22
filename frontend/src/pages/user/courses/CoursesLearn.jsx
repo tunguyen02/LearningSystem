@@ -11,6 +11,7 @@ import {
   Input,
   Rate,
   message,
+  Collapse,
 } from "antd";
 import ReactPlayer from "react-player";
 import axios from "axios";
@@ -19,10 +20,12 @@ import { jwtDecode } from "jwt-decode";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
+const { Panel } = Collapse;
 
 const CoursesLearnLesson = () => {
   const [lessons, setLessons] = useState([]);
   const [currentLesson, setCurrentLesson] = useState(null);
+  const [currentVideo, setCurrentVideo] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [comment, setComment] = useState("");
   const [rate, setRate] = useState(0);
@@ -43,8 +46,13 @@ const CoursesLearnLesson = () => {
       const lessonsResponse = await axios.get(
         `http://localhost:8080/api/v1/lessons/all?courseId=${id}`
       );
-      setLessons(lessonsResponse.data.data);
-      setCurrentLesson(lessonsResponse.data.data[0] || null);
+      const lessonData = lessonsResponse.data.data;
+      setLessons(lessonData);
+
+      if (lessonData.length > 0) {
+        setCurrentLesson(lessonData[0]);
+        setCurrentVideo(lessonData[0]?.videos[0] || null);
+      }
     } catch (error) {
       console.error("Failed to fetch lessons or course:", error);
       message.error("Failed to load lessons or course.");
@@ -67,8 +75,9 @@ const CoursesLearnLesson = () => {
     fetchComments();
   }, [fetchLessonsAndCourse, fetchComments]);
 
-  const handleLessonClick = (lesson) => {
+  const handleVideoClick = (lesson, video) => {
     setCurrentLesson(lesson);
+    setCurrentVideo(video);
   };
 
   const handleCommentSubmit = async () => {
@@ -108,6 +117,7 @@ const CoursesLearnLesson = () => {
       </div>
 
       <Row gutter={[16, 16]}>
+        {/* Video Player và Nội dung bài học */}
         <Col span={16}>
           <Card className="rounded-lg shadow-lg p-4 pt-0">
             <div className="lesson-content">
@@ -115,21 +125,21 @@ const CoursesLearnLesson = () => {
                 Lesson {currentLesson?.order}: {currentLesson?.title}
               </Title>
               <ReactPlayer
-                url={currentLesson?.videos[0]?.url}
+                url={currentVideo?.url}
                 controls
                 width="100%"
                 height="400px"
               />
               <Title className="mt-3" level={4}>
-                {currentLesson?.videos[0]?.title}
-              </Title>{" "}
+                {currentVideo?.title}
+              </Title>
               <Text>{currentLesson?.content}</Text>
             </div>
 
+            {/* Comments Section */}
             <div className="comments-section mt-8">
               <Title level={4}>Comments</Title>
 
-              {/* Comments List */}
               <List
                 dataSource={reviews}
                 renderItem={(review) => (
@@ -182,23 +192,38 @@ const CoursesLearnLesson = () => {
           </Card>
         </Col>
 
-        {/* Lessons List */}
+        {/* Lessons and Videos List */}
         <Col span={8}>
           <Card title="Lessons List" bordered className="rounded-lg shadow-lg">
-            <List
-              dataSource={lessons || []}
-              renderItem={(lesson) => (
-                <List.Item key={lesson?._id}>
-                  <Button
-                    type="link"
-                    onClick={() => handleLessonClick(lesson)}
-                    className="text-left w-full hover:bg-blue-100 rounded-lg transition duration-200"
-                  >
-                    Lesson {lesson?.order}: {lesson?.title}
-                  </Button>
-                </List.Item>
-              )}
-            />
+            <Collapse>
+              {lessons.map((lesson) => (
+                <Panel
+                  header={`Lesson ${lesson.order}: ${lesson.title}`}
+                  key={lesson._id}
+                >
+                  <div className="flex flex-col gap-1">
+                    {lesson.videos.map((video) => (
+                      <div
+                        key={video._id}
+                        onClick={() => handleVideoClick(lesson, video)}
+                        className="p-2 rounded-lg hover:bg-blue-50 transition cursor-pointer border"
+                        style={{ display: "flex", alignItems: "center" }}
+                      >
+                        <span
+                          className="text-base font-semibold"
+                          style={{ marginRight: "8px" }}
+                        >
+                          {video.title}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          Click to watch
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </Panel>
+              ))}
+            </Collapse>
           </Card>
         </Col>
       </Row>

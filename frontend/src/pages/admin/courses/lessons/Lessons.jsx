@@ -88,7 +88,7 @@ const Lessons = () => {
         Lessons for Course: {course?.name}
       </h1>
 
-      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-5xl">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
         {lessons.length ? (
           lessons.map((lesson) => (
             <li
@@ -101,15 +101,26 @@ const Lessons = () => {
               <div className="flex justify-around">
                 <Button
                   type="link"
-                  className="text-blue-500 hover:text-blue-700 mt-3"
+                  className="text-green-500 hover:!text-green-700 mt-3"
                   onClick={() => handleViewDetails(lesson)}
                 >
                   View Details
                 </Button>
                 <Button
                   type="link"
+                  className="text-blue-500 hover:!text-blue-700 mt-3"
+                  onClick={() =>
+                    navigate(
+                      `/admin/courses/${id}/lessons/update/${lesson._id}`
+                    )
+                  }
+                >
+                  Edit Lesson
+                </Button>
+                <Button
+                  type="link"
                   danger
-                  className="text-red-500 hover:text-red-700 mt-3"
+                  className="text-red-500 hover:!text-red-700 mt-3"
                   onClick={() => handleDeleteLesson(lesson)}
                 >
                   Delete Lesson

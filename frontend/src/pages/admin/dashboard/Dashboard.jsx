@@ -1,80 +1,156 @@
-import { IoPersonAdd, IoCart, IoNotifications } from "react-icons/io5";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import {
+  IoPersonAdd,
+  IoCart,
+  IoNotifications,
+  IoSchool,
+} from "react-icons/io5";
 
 const Dashboard = () => {
-  const stats = [
-    { title: "Total Courses", value: 120 },
-    { title: "Total Users", value: 350 },
-    { title: "Pending Orders", value: 25 },
-    { title: "Active Subscriptions", value: 50 },
-  ];
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [usersRes, coursesRes, ordersRes] = await Promise.all([
+          axios.get("http://localhost:8080/api/v1/users"),
+          axios.get("http://localhost:8080/api/v1/courses"),
+          axios.get("http://localhost:8080/api/v1/registrations", {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }),
+        ]);
+
+        const totalUsers = usersRes.data.data.length;
+        const totalCourses = coursesRes.data.data.courses.length;
+        const totalPendingOrders = ordersRes.data.data.filter(
+          (order) => order.status === "pending"
+        ).length;
+
+        setData([
+          {
+            title: "Total Courses",
+            value: totalCourses,
+            color: "#4299E1",
+            icon: <IoSchool size={32} color="#4299E1" />,
+          },
+          {
+            title: "Total Users",
+            value: totalUsers,
+            color: "#48BB78",
+            icon: <IoPersonAdd size={32} color="#48BB78" />,
+          },
+          {
+            title: "Pending Orders",
+            value: totalPendingOrders,
+            color: "#ECC94B",
+            icon: <IoCart size={32} color="#ECC94B" />,
+          },
+        ]);
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+        setError("Failed to fetch data. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-6">
+          Loading Dashboard...
+        </h1>
+        <p className="text-gray-600">
+          Please wait while data is being fetched.
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-6">
+        <h1 className="text-3xl font-semibold text-gray-800 mb-6">Error</h1>
+        <p className="text-red-600">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
       <h1 className="text-3xl font-semibold text-gray-800 mb-6">Dashboard</h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {stats.map((item, index) => (
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        {data.map((item, index) => (
           <div
             key={index}
-            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
+            className={`p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 flex items-center gap-4`}
+            style={{ backgroundColor: item.color + "20" }}
           >
-            <h3 className="text-xl font-medium text-gray-600">{item.title}</h3>
-            <p className="text-3xl font-semibold text-blue-600 mt-2">
-              {item.value}
-            </p>
+            <div>{item.icon}</div>
+            <div>
+              <h3 className="text-xl font-medium">{item.title}</h3>
+              <p
+                className="text-3xl font-semibold"
+                style={{ color: item.color }}
+              >
+                {item.value}
+              </p>
+            </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h3 className="text-xl font-medium text-gray-600">
-            Orders Over Time
-          </h3>
-          <div className="h-64 bg-gray-200 mt-4 flex items-center justify-center text-gray-500">
-            <p>Chart Here</p>
-          </div>
+      {/* Orders Over Time */}
+      <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h3 className="text-xl font-medium text-gray-600">Data Overview</h3>
+        <div className="mt-4">
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data}>
+              <XAxis dataKey="title" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="value" fill="#4299E1" />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-lg shadow-md mt-8">
-        <h3 className="text-xl font-medium text-gray-600">Recent Activity</h3>
-        <div className="mt-4">
-          <ul className="space-y-3">
-            <li className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <IoPersonAdd size={20} className="text-green-500" />
-                <p className="text-gray-600">
-                  New Course: Full Stack Development
-                </p>
-              </div>
-              <span className="text-sm text-gray-500">Just now</span>
-            </li>
-            <li className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <IoPersonAdd size={20} className="text-blue-500" />
-                <p className="text-gray-600">User Signed Up: Lê Tú</p>
-              </div>
-              <span className="text-sm text-gray-500">5 minutes ago</span>
-            </li>
-            <li className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <IoCart size={20} className="text-yellow-500" />
-                <p className="text-gray-600">
-                  Course Order Pending: Full Stack
-                </p>
-              </div>
-              <span className="text-sm text-gray-500">10 minutes ago</span>
-            </li>
-            <li className="flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                <IoNotifications size={20} className="text-red-500" />
-                <p className="text-gray-600">User Subscription: Nguyễn Tú</p>
-              </div>
-              <span className="text-sm text-gray-500">30 minutes ago</span>
-            </li>
-          </ul>
-        </div>
+      {/* Recent Activities */}
+      <div className="bg-white p-6 rounded-lg shadow-md">
+        <h3 className="text-xl font-medium text-gray-600">Recent Activities</h3>
+        <ul className="mt-4 space-y-3">
+          <li className="flex items-center gap-4">
+            <IoNotifications size={24} color="#4299E1" />
+            <span>5 new users registered today</span>
+          </li>
+          <li className="flex items-center gap-4">
+            <IoCart size={24} color="#48BB78" />
+            <span>10 new orders placed</span>
+          </li>
+          <li className="flex items-center gap-4">
+            <IoSchool size={24} color="#ECC94B" />
+            <span>3 new courses added</span>
+          </li>
+        </ul>
       </div>
     </div>
   );
