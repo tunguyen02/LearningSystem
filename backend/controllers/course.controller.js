@@ -1,5 +1,7 @@
 import CourseModel from "../models/course.model.js";
 import APIFeatures from "../utils/apiFeature.js";
+import moment from "moment";
+import UserModel from "../models/user.model.js";
 import RegisterCourseModel from "../models/registerCourse.model.js";
 import uploadController from "./upload.controller.js";
 const courseController = {
@@ -188,6 +190,39 @@ const courseController = {
                     approved: approvedCourses,
                     pending: pendingCourses,
                     cancelled: cancelledCourses
+                }
+            });
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                message: error.message
+            });
+        }
+    },
+
+    getDailyStats: async (req, res) => {
+        try {
+            const startOfDay = moment().startOf('day').toDate();
+            const endOfDay = moment().endOf('day').toDate();
+
+            const newUsersCount = await UserModel.countDocuments({
+                createdAt: { $gte: startOfDay, $lt: endOfDay }
+            });
+
+            const newCoursesCount = await CourseModel.countDocuments({
+                createdAt: { $gte: startOfDay, $lt: endOfDay }
+            });
+
+            const newOrdersCount = await RegisterCourseModel.countDocuments({
+                createdAt: { $gte: startOfDay, $lt: endOfDay }
+            });
+
+            res.json({
+                success: true,
+                data: {
+                    newUsersCount,
+                    newCoursesCount,
+                    newOrdersCount
                 }
             });
         } catch (error) {
