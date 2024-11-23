@@ -6,6 +6,8 @@ import { IoEyeOutline } from "react-icons/io5";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isVisited, setIsVisited] = useState(false);
   const [dataDetails, setDataDetails] = useState({});
 
@@ -19,11 +21,22 @@ const Users = () => {
     setDataDetails({});
   };
 
+  const handleSearch = (e) => {
+    const value = e.target.value.toLowerCase();
+    setSearchTerm(value);
+
+    const filtered = users.filter((user) =>
+      user.name.toLowerCase().includes(value)
+    );
+    setFilteredUsers(filtered);
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/v1/users");
         setUsers(response.data.data);
+        setFilteredUsers(response.data.data);
       } catch (e) {
         console.error("Failed to fetch users:", e);
       }
@@ -33,14 +46,16 @@ const Users = () => {
 
   return (
     <div className="flex flex-col gap-4 px-2">
-      <h1 className="text-3xl text-gray-600 font-semibold">Courses</h1>
+      <h1 className="text-3xl text-gray-600 font-semibold">Users</h1>
       <div className="flex items-center justify-between">
         <form>
           <Input
             size="large"
-            placeholder="Search..."
+            placeholder="Search by name..."
             className="w-64"
             prefix={<CiSearch size={20} />}
+            value={searchTerm}
+            onChange={handleSearch}
           />
         </form>
       </div>
@@ -54,7 +69,7 @@ const Users = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user, index) => (
+          {filteredUsers.map((user, index) => (
             <tr key={index} className="border-b border-gray-300">
               <td className="text-center">{index + 1}</td>
               <td className="text-center">{user.name}</td>
@@ -86,7 +101,7 @@ const Users = () => {
         centered
         width={600}
       >
-        <div className=" rounded-lg">
+        <div className="rounded-lg">
           <h1 className="text-3xl text-gray-700 font-semibold">User Details</h1>
           <div className="flex flex-col gap-4 mt-4">
             <div className="flex items-center gap-4">

@@ -17,6 +17,7 @@ import {
 
 const Dashboard = () => {
   const [data, setData] = useState([]);
+  const [dataNew, setDataNew] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -25,15 +26,23 @@ const Dashboard = () => {
       setLoading(true);
       setError(null);
       try {
-        const [usersRes, coursesRes, ordersRes] = await Promise.all([
-          axios.get("http://localhost:8080/api/v1/users"),
-          axios.get("http://localhost:8080/api/v1/courses"),
-          axios.get("http://localhost:8080/api/v1/registrations", {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }),
-        ]);
+        const [usersRes, coursesRes, ordersRes, recentActivities] =
+          await Promise.all([
+            axios.get("http://localhost:8080/api/v1/users"),
+            axios.get("http://localhost:8080/api/v1/courses"),
+            axios.get("http://localhost:8080/api/v1/registrations", {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }),
+            axios.get("http://localhost:8080/api/v1/courses/daily-stats", {
+              headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }),
+          ]);
+
+        setDataNew(recentActivities.data.data);
 
         const totalUsers = usersRes.data.data.length;
         const totalCourses = coursesRes.data.data.courses.length;
@@ -140,15 +149,15 @@ const Dashboard = () => {
         <ul className="mt-4 space-y-3">
           <li className="flex items-center gap-4">
             <IoNotifications size={24} color="#4299E1" />
-            <span>5 new users registered today</span>
+            <span>{dataNew?.newUsersCount} new users registered today</span>
           </li>
           <li className="flex items-center gap-4">
             <IoCart size={24} color="#48BB78" />
-            <span>10 new orders placed</span>
+            <span>{dataNew?.newOrdersCount} new orders placed</span>
           </li>
           <li className="flex items-center gap-4">
             <IoSchool size={24} color="#ECC94B" />
-            <span>3 new courses added</span>
+            <span>{dataNew.newCoursesCount} new courses added</span>
           </li>
         </ul>
       </div>

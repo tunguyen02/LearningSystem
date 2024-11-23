@@ -9,6 +9,8 @@ import { useNavigate } from "react-router-dom";
 const Courses = () => {
   const navigate = useNavigate();
   const [courses, setCourses] = useState([]);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [courseIdToDelete, setCourseIdToDelete] = useState(null);
 
@@ -16,6 +18,7 @@ const Courses = () => {
     try {
       const response = await axios.get("http://localhost:8080/api/v1/courses");
       setCourses(response.data.data.courses);
+      setFilteredCourses(response.data.data.courses);
     } catch (e) {
       console.error("Failed to fetch courses:", e);
     }
@@ -24,6 +27,13 @@ const Courses = () => {
   useEffect(() => {
     fetchCourses();
   }, []);
+
+  useEffect(() => {
+    const filtered = courses.filter((course) =>
+      course.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredCourses(filtered);
+  }, [searchTerm, courses]);
 
   const handleDelete = async (id) => {
     try {
@@ -65,9 +75,11 @@ const Courses = () => {
         <form>
           <Input
             size="large"
-            placeholder="Search..."
+            placeholder="Search by name..."
             className="w-64"
             prefix={<CiSearch size={20} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </form>
         <Button
@@ -93,7 +105,7 @@ const Courses = () => {
           </tr>
         </thead>
         <tbody>
-          {courses.map((course, index) => (
+          {filteredCourses.map((course, index) => (
             <tr key={index} className="border-b border-gray-300">
               <td className="text-center flex justify-center">
                 <img

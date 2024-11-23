@@ -6,6 +6,8 @@ import { IoCheckmarkOutline, IoCloseOutline } from "react-icons/io5";
 
 const CourseOrder = () => {
   const [courseOrders, setCourseOrders] = useState([]);
+  const [searchUser, setSearchUser] = useState("");
+  const [searchCourse, setSearchCourse] = useState("");
 
   const fetchCourseOrders = async () => {
     try {
@@ -69,20 +71,38 @@ const CourseOrder = () => {
     }
   };
 
+  const filteredCourseOrders = courseOrders.filter((courseOrder) => {
+    const userName = courseOrder?.userId?.name.toLowerCase() || "";
+    const courseName = courseOrder?.courseId?.name.toLowerCase() || "";
+    return (
+      userName.includes(searchUser.toLowerCase()) &&
+      courseName.includes(searchCourse.toLowerCase())
+    );
+  });
+
   return (
     <div className="flex flex-col gap-5 px-4">
       <h1 className="text-3xl text-gray-800 font-semibold">Course Order</h1>
-      <div className="flex items-center justify-between ">
-        <form>
-          <Input
-            placeholder="Search..."
-            size="large"
-            className="w-64"
-            prefix={<CiSearch size={20} />}
-          />
-        </form>
+      <div className="flex items-center gap-4">
+        <Input
+          placeholder="Search by User Name..."
+          size="large"
+          className="w-64"
+          prefix={<CiSearch size={20} />}
+          value={searchUser}
+          onChange={(e) => setSearchUser(e.target.value)}
+        />
+
+        <Input
+          placeholder="Search by Course Name..."
+          size="large"
+          className="w-64"
+          prefix={<CiSearch size={20} />}
+          value={searchCourse}
+          onChange={(e) => setSearchCourse(e.target.value)}
+        />
       </div>
-      <table className="min-w-full border-collapse ">
+      <table className="min-w-full border-collapse">
         <thead className="bg-gray-100">
           <tr>
             <th className="py-3 px-4 text-center text-sm font-semibold text-gray-700">
@@ -103,7 +123,7 @@ const CourseOrder = () => {
           </tr>
         </thead>
         <tbody>
-          {courseOrders.map((courseOrder, index) => (
+          {filteredCourseOrders.map((courseOrder, index) => (
             <tr key={index} className="border-b border-gray-300">
               <td className="py-3 px-4 text-center">{index + 1}</td>
               <td className="py-3 px-4 text-center">
