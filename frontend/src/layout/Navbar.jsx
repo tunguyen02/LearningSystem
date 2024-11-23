@@ -46,12 +46,15 @@ const Navbar = ({ onToggleMenu }) => {
           className="cursor-pointer"
           onClick={onToggleMenu}
         />
-        <div className="flex items-center gap-x-2">
+        <div
+          onClick={() => navigate("/user/home")}
+          className="flex items-center gap-x-2 cursor-pointer"
+        >
           <img src="/public/logo.svg" alt="Logo" className="h-10" />
           <p className="font-semibold text-lg">Byway</p>
         </div>
       </div>
-      {token ? (
+      {name ? (
         <div className="flex items-center gap-x-4">
           <CiBellOn size={30} className="cursor-pointer" />
           <img
