@@ -8,6 +8,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 CourseRouter.get('/my-courses', authMiddleware, courseController.getAllCourseByUser);
 CourseRouter.get('/', courseController.getAllCourses);
+CourseRouter.get('/daily-stats', authMiddleware, checkAdmin, courseController.getDailyStats);
 CourseRouter.get('/:id', courseController.getCourseById);
 CourseRouter.post('/', authMiddleware, checkAdmin, upload.single('image'), courseController.createCourse);
 CourseRouter.put('/:id', authMiddleware, checkAdmin, upload.single('image'), courseController.updateCourse);
