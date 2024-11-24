@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Card, Typography, Input, Slider, Select, Button } from "antd";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { FilterOutlined } from "@ant-design/icons";
 
@@ -22,7 +21,7 @@ const Courses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/courses");
+        const response = await axios.get("http://localhost:3000/api/v1/courses");
         const fetchedCourses = response.data.data.courses;
         setCourses(fetchedCourses);
         setFilteredCourses(fetchedCourses);
@@ -33,7 +32,7 @@ const Courses = () => {
 
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/v1/categories");
+        const response = await axios.get("http://localhost:3000/api/v1/categories");
         const fetchedCategories = response.data.data.categories;
         setCategories(fetchedCategories);
       } catch (error) {
