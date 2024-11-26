@@ -5,6 +5,8 @@ import Courses from "./pages/user/courses/Courses.jsx";
 import DetailsCourses from "./pages/user/courses/DetailsCourses.jsx";
 import CoursesLearn from "./pages/user/courses/CoursesLearn.jsx";
 import Payment from "./pages/user/courses/Payment.jsx";
+import Layout from "./pages/user/order/Layout";
+
 const App = () => {
     return (
         <Routes>
@@ -13,6 +15,7 @@ const App = () => {
                 <Route path="courses/:id" element={<DetailsCourses />} />
                 <Route path="courses/:id/learn" element={<CoursesLearn />} />
                 <Route path="courses/:id/payment" element={<Payment />} />
+                <Route path="course-order" element={<Layout />} />            
             </Route>
 
             <Route path="/" element={<Navigate to="/user" />} />
