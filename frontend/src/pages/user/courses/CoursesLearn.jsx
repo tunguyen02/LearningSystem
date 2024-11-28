@@ -110,85 +110,124 @@ const CoursesLearnLesson = () => {
         }
       };
 
-    return (
-        <div>
-            <Row gutter={[16, 16]}>
-                <Col span={16}>
-                    <Card>
-                        {currentVideo ? (
-                            <ReactPlayer url={currentVideo.url} controls width="100%" />
-                        ) : (
-                            <Text>No video available</Text>
-                        )}
-                    </Card>
-                    <Divider />
-                    <Title level={4}>{currentLesson?.title}</Title>
-                    <Text>{currentLesson?.description}</Text>
-                </Col>
-                <Col span={8}>
-                    <List
-                        header={<Title level={4}>Lessons</Title>}
-                        bordered
-                        dataSource={lessons}
-                        renderItem={(lesson) => (
-                            <List.Item>
-                                <List.Item.Meta
-                                    title={lesson.title}
-                                    description={lesson.description}
-                                />
-                                <List
-                                    dataSource={lesson.videos}
-                                    renderItem={(video) => (
-                                        <List.Item
-                                            onClick={() => handleVideoClick(lesson, video)}
-                                            style={{ cursor: "pointer" }}
-                                        >
-                                            <Avatar icon={<PlayCircleOutlined />} />
-                                            <Text>{video.title}</Text>
-                                        </List.Item>
-                                    )}
-                                />
-                            </List.Item>
-                        )}
-                    />
-                </Col>
-            </Row>
-            <Divider />
-            <Row gutter={[16, 16]}>
-                <Col span={24}>
-                    <Title level={4}>Reviews</Title>
-                    <List
-                        dataSource={reviews}
-                        renderItem={(review) => (
-                            <List.Item>
-                                <List.Item.Meta
-                                    avatar={<Avatar>{review.user.name[0]}</Avatar>}
-                                    title={review.user.name}
-                                    description={
-                                        <>
-                                            <Rate disabled value={review.rating} />
-                                            <Text>{review.comment}</Text>
-                                        </>
-                                    }
-                                />
-                            </List.Item>
-                        )}
-                    />
-                    <Divider />
-                    <Title level={4}>Add a Review</Title>
-                    <TextArea
-                        rows={4}
-                        value={comment}
-                        onChange={(e) => setComment(e.target.value)}
-                        placeholder="Write your comment here..."
-                    />
+      return (
+        <div className="courses-learn-container bg-gray-50 p-8">
+          <div className="course-header mb-6">
+            <Title level={2}>Course Name: {courses?.name}</Title>
+          </div>
+    
+          <Row gutter={[16, 16]}>
+            {/* Video Player và Nội dung bài học */}
+            <Col span={16}>
+              <Card className="rounded-lg shadow-lg p-4 pt-0">
+                <div className="lesson-content">
+                  <Title level={3}>
+                    Lesson {currentLesson?.order}: {currentLesson?.title}
+                  </Title>
+                  <ReactPlayer
+                    url={currentVideo?.url}
+                    controls
+                    width="100%"
+                    height="400px"
+                  />
+                  <Title className="mt-3" level={4}>
+                    {currentVideo?.title}
+                  </Title>
+                  <Text>{currentLesson?.content}</Text>
+                </div>
+    
+                {/* Comments Section */}
+                <div className="comments-section mt-8">
+                  <Title level={4}>Comments</Title>
+    
+                  <List
+                    dataSource={reviews}
+                    renderItem={(review) => (
+                      <List.Item className="p-3 border-b border-gray-200">
+                        <div>
+                          <div className="flex items-center mb-1">
+                            <Avatar src={review.avatar} className="mr-3" />
+                            <div className="flex flex-col">
+                              <Text strong className="block mr-2">
+                                {review.userId.name}
+                              </Text>
+                              <Rate
+                                disabled
+                                value={review.rating}
+                                style={{ fontSize: "10px" }}
+                              />
+                            </div>
+                          </div>
+                          <Text>{review.comment}</Text>
+                        </div>
+                      </List.Item>
+                    )}
+                  />
+    
+                  <Divider
+                    orientation="left"
+                    className="mt-5 font-semibold text-xl"
+                  >
+                    Write a Comment
+                  </Divider>
+                  <TextArea
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    rows={4}
+                    placeholder="Write your comment here..."
+                    className="mb-4 border rounded-lg p-2"
+                  />
+                  <div className="mb-4">
                     <Rate value={rate} onChange={(value) => setRate(value)} />
-                    <Button type="primary" onClick={handleCommentSubmit}>
-                        Submit
-                    </Button>
-                </Col>
-            </Row>
+                  </div>
+                  <Button
+                    type="primary"
+                    onClick={handleCommentSubmit}
+                    disabled={!comment.trim() || rate === 0}
+                    className="w-full"
+                  >
+                    Submit Comment
+                  </Button>
+                </div>
+              </Card>
+            </Col>
+    
+            {/* Lessons and Videos List */}
+            <Col span={8}>
+              <Card title="Lessons List" bordered className="rounded-lg shadow-lg">
+                <Collapse>
+                  {lessons.map((lesson) => (
+                    <Panel
+                      header={`Lesson ${lesson.order}: ${lesson.title}`}
+                      key={lesson._id}
+                    >
+                      <div className="flex flex-col gap-1">
+                        {lesson.videos.map((video) => (
+                          <div
+                            key={video._id}
+                            onClick={() => handleVideoClick(lesson, video)}
+                            className="p-2 rounded-lg hover:bg-blue-50 transition cursor-pointer border"
+                            style={{ display: "flex", alignItems: "center" }}
+                          >
+                            <span
+                              className="text-base font-semibold"
+                              style={{ marginRight: "8px" }}
+                            >
+                              {video.title}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                              Click to watch
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </Panel>
+                  ))}
+                </Collapse>
+              </Card>
+            </Col>
+          </Row>
         </div>
-    );
+      );
 }
 export default CoursesLearnLesson;  
