@@ -17,7 +17,6 @@ const Navbar = ({ onToggleMenu }) => {
       if (token) {
         try {
           const { exp: expirationDate } = jwtDecode(token);
-          console.log(jwtDecode(token));
           const currentTime = Math.floor(Date.now() / 1000);
 
           if (expirationDate < currentTime) {

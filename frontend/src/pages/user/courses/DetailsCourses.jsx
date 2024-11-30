@@ -1,7 +1,20 @@
-import { Card,Button,Typography,List,Divider,Row,Col,Tag,Avatar,Input,Rate,message,} from "antd";
+import {
+  Card,
+  Button,
+  Typography,
+  List,
+  Divider,
+  Row,
+  Col,
+  Tag,
+  Avatar,
+  Input,
+  Rate,
+  message,
+} from "antd";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate ,useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import { ShoppingCartOutlined } from "@ant-design/icons";
