@@ -93,8 +93,6 @@ const Cancelled = () => {
       </div>
     </div>
   );
-
-
 };
 
 export default Cancelled;

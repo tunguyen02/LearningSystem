@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Card, Typography, Input, Empty } from "antd";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { Card, Typography, Input, Empty } from "antd";
 
 const { Title, Text } = Typography;
 const Pending = () => {
@@ -93,7 +93,6 @@ const Pending = () => {
       </div>
     </div>
   );
-
 };
 
 export default Pending;
