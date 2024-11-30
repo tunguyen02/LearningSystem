@@ -29,7 +29,6 @@ const App = () => {
                 </Route>            
             </Route>
 
-            <Route path="/" element={<Navigate to="/user" />} />
         </Routes>
     );
     };
