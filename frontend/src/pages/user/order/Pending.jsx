@@ -33,43 +33,66 @@ const Pending = () => {
     course?.courseId?.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-    return (
-        <div className="container mx-auto px-4">
-            <Title level={2} className="text-center mt-12">
-                Pending Courses
-            </Title>
-            <Input
-                placeholder="Search course..."
-                className="w-1/3 mx-auto mt-4"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {filteredCourses.length === 0 ? (
-                <Empty className="mt-12" />
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8">
-                    {filteredCourses.map((course) => (
-                        <Card
-                            key={course.id}
-                            hoverable
-                            cover={
-                                <img
-                                    alt={course.courseId.name}
-                                    src={course.courseId.imageUrl}
-                                />
-                            }
-                            onClick={() => navigate(`/courses/${course.courseId.id}`)}
-                        >
-                            <Card.Meta
-                                title={course.courseId.name}
-                                description={course.courseId.description}
-                            />
-                        </Card>
-                    ))}
-                </div>
-            )}
-        </div>  
-    );
+  return (
+    <div className="p-5">
+      <Title level={2} className="mb-5">
+        Pending Courses
+      </Title>
+      <div className="mb-5">
+        <Input.Search
+          placeholder="Search by course name"
+          allowClear
+          onSearch={(value) => setSearchTerm(value)}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          enterButton
+        />
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+        {filteredCourses.length > 0 ? (
+          filteredCourses.map((course, index) => (
+            <Card
+              onClick={() => navigate(`/user/courses/${course?.courseId?._id}`)}
+              key={index}
+              hoverable
+              cover={
+                <img
+                  alt={course?.courseId?.name}
+                  src={course?.courseId?.image}
+                  className="w-full h-40 object-cover rounded-lg"
+                />
+              }
+              className="shadow-lg"
+            >
+              <Title level={4}>{course?.courseId?.name}</Title>
+              <Text className="text-sm text-gray-600">
+                {course?.courseId?.category} - {course?.courseId?.level}
+              </Text>
+              <div className="mt-2">
+                <Text strong className="text-lg">
+                  $
+                  {course?.courseId?.discountPrice
+                    ? course?.courseId?.discountPrice
+                    : course?.courseId?.price}
+                </Text>
+                {course?.courseId?.discountPrice && (
+                  <Text className="ml-2 text-gray-500 line-through">
+                    ${course?.courseId?.price}
+                  </Text>
+                )}
+              </div>
+              <Text className="text-sm text-gray-700 mt-2">
+                {course?.courseId?.description}
+              </Text>
+            </Card>
+          ))
+        ) : (
+          <div className="flex items-center justify-center h-64">
+            <Empty description="No courses available" />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
 };
 
