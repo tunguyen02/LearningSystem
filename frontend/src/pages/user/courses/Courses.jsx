@@ -12,7 +12,7 @@ const { Title, Text } = Typography;
 const { Option } = Select;
 
 const Courses = () => {
-  const [courses, setCourses] = useState([]);
+  const [Courses, setCourses] = useState([]);
   const [filteredCourses, setFilteredCourses] = useState([]);
   const [categories, setCategories] = useState([]);
   const [priceRange] = useState([0, 500]);
@@ -27,7 +27,7 @@ const Courses = () => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:3000/api/v1/courses"
+          "http://localhost:8080/api/v1/courses"
         );
         const fetchedCourses = response.data.data.courses;
         setCourses(fetchedCourses);
@@ -37,25 +37,11 @@ const Courses = () => {
           ...new Set(fetchedCourses.map((course) => course.category)),
         ];
         setCategories(uniqueCategories);
-      } catch (error) {
-        console.error("Error fetching courses:", error);
+      } catch (e) {
+        console.error("Failed to fetch courses:", e);
       }
     };
-
-    const fetchCategories = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:3000/api/v1/categories"
-        );
-        const fetchedCategories = response.data.data.categories;
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error("Error fetching categories:", error);
-      }
-    };
-
     fetchCourses();
-    fetchCategories();
   }, []);
 
   const applyFilters = () => {
@@ -77,8 +63,8 @@ const Courses = () => {
     setFilteredCourses(results);
   };
 
-  const navigate = useNavigate();  
-  
+  const navigate = useNavigate();
+
   return (
     <div className="flex p-5 gap-5">
       {/* Left Sidebar - Filters */}
@@ -187,5 +173,6 @@ const Courses = () => {
     </div>
   );
 };
+
 
 export default Courses;

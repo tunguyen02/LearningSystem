@@ -15,22 +15,29 @@ import PrivateRouter from "./pages/auth/PrivateRouter.jsx";
 
 const App = () => {
     return (
-        <Routes>
-            <Route path="/user" element={<PrivateRouter ><User /> </PrivateRouter>}>
-                <Route path="courses" element={<Courses />} />
-                <Route path="courses/:id" element={<DetailsCourses />} />
-                <Route path="courses/:id/learn" element={<CoursesLearn />} />
-                <Route path="courses/:id/payment" element={<Payment />} />
-                <Route path="course-order" element={<Layout />}>
-                    <Route path="" element={<Navigate to="approved" />} />
-                    <Route path="approved" element={<Approved/>} />
-                    <Route path="cancelled" element={<Cancelled/>} />
-                    <Route path="pending" element={<Pending/>} />
-                </Route>            
-            </Route>
-
-        </Routes>
+      <Routes>
+        <Route
+          path="/user"
+          element={
+            <PrivateRouter>
+              <User />
+            </PrivateRouter>
+          }
+        >
+          <Route path="courses" element={<Courses />} />
+          <Route path="course-order" element={<Layout />}>
+            <Route path="" element={<Navigate to="approved" />} />
+            <Route path="approved" element={<Approved />} />
+            <Route path="cancelled" element={<Cancelled />} />
+            <Route path="pending" element={<Pending />} />
+          </Route>
+          <Route path="courses/:id" element={<DetailsCourses />} />
+          <Route path="courses/payment/:id" element={<Payment />} />
+          <Route path="courses/:id/learn" element={<CoursesLearn />} />
+        </Route>
+      </Routes>
     );
-    };
+  };
+  
 
 export default App;
