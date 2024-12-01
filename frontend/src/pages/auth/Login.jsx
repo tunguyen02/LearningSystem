@@ -44,7 +44,7 @@ const Login = () => {
     <div className="flex">
       <div className="flex-[4] h-screen">
         <img
-          src="/public/login.svg"
+          src="login.svg"
           className="h-full w-full object-bottom object-cover"
           alt=""
         />

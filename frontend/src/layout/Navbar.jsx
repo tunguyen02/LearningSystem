@@ -49,7 +49,7 @@ const Navbar = ({ onToggleMenu }) => {
           onClick={() => navigate("/user/home")}
           className="flex items-center gap-x-2 cursor-pointer"
         >
-          <img src="/public/logo.svg" alt="Logo" className="h-10" />
+          <img src="logo.svg" alt="Logo" className="h-10" />
           <p className="font-semibold text-lg">Byway</p>
         </div>
       </div>
