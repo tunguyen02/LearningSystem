@@ -78,7 +78,7 @@ const EditLesson = () => {
         videos: data.videos,
       };
       await axios.put(
-        `http://localhost:8080/api/v1/lessons/${idLesson}`,
+        `http://localhost:8080/api/v1/lessons/update/${idLesson}`,
         dataSubmit,
         {
           headers: {

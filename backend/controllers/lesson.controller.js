@@ -106,6 +106,75 @@ const lessonController = {
       });
     }
   },
+
+  markVideoAsWatched: async (req, res) => {
+    try {
+      const { lessonId, videoIndex } = req.body;
+      const lesson = await LessonModel.findById(lessonId);
+
+      if (!lesson) {
+        return res.status(404).json({
+          success: false,
+          message: "Lesson not found",
+        });
+      }
+
+      if (lesson.videos[videoIndex]) {
+        lesson.videos[videoIndex].watched = true;
+        await lesson.save();
+
+        res.json({
+          success: true,
+          message: "Video marked as watched",
+          data: lesson.videos[videoIndex],
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: "Video not found",
+        });
+      }
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: "Error marking video as watched: " + error.message,
+      });
+    }
+  },
+
+  updateVideoStatus: async (req, res) => {
+    const { lessonId, videoId, watched } = req.body;
+    try {
+      const lesson = await LessonModel.findById(lessonId);
+      if (!lesson) {
+        return res.status(404).json({
+          success: false,
+          message: "Lesson not found"
+        });
+      }
+
+      const video = lesson.videos.id(videoId);
+      if (!video) {
+        return res.status(404).json({
+          success: false, message: "Video not found"
+        });
+      }
+
+      video.watched = watched;
+      await lesson.save();
+
+      res.json({
+        success: true,
+        message: "Video status updated successfully",
+        data: lesson,
+      });
+    } catch (error) {
+      res.status(400).json({
+        success: false,
+        message: "Error updating video status: " + error.message,
+      });
+    }
+  },
 };
 
 export default lessonController;
