@@ -10,7 +10,7 @@ export const createAdmin = async () => {
 
     const existingAdmin = await UserModel.findOne({ email });
     if (!existingAdmin) {
-        const admin = new User({ name, email, password: hashedPassword, role });
+        const admin = new UserModel({ name, email, password: hashedPassword, role });
         await admin.save();
         console.log('Admin created');
     } else {
