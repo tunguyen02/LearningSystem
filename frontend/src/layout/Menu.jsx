@@ -14,7 +14,7 @@ const Menu = ({ data, isOpen, onClose }) => {
           }`}
       >
         <div className="flex items-center gap-x-2 px-3 mx-3 mb-2">
-          <img src="logo.svg" alt="Logo" className="h-16" />
+          <img src="/logo.svg" alt="Logo" className="h-16" />
           <p className="font-semibold text-3xl">Byway</p>
         </div>
         {Array.isArray(data) &&
