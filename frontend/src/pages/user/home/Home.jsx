@@ -16,7 +16,7 @@ const Home = () => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/courses"
+          "https://learningsystem-xwsq.onrender.com/api/v1/courses"
         );
         setCourses(response.data.data.courses);
       } catch (e) {

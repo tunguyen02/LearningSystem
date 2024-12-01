@@ -34,7 +34,7 @@ const Register = () => {
       const { email, password } = data;
       const dataSubmit = { name, email, password };
       await axios.post(
-        "http://localhost:8080/api/v1/users/register",
+        "https://learningsystem-xwsq.onrender.com/api/v1/users/register",
         dataSubmit
       );
       message.success("Register successful");

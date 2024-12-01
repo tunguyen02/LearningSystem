@@ -39,12 +39,12 @@ const CoursesLearnLesson = () => {
   const fetchLessonsAndCourse = useCallback(async () => {
     try {
       const courseResponse = await axios.get(
-        `http://localhost:8080/api/v1/courses/${id}`
+        `https://learningsystem-xwsq.onrender.com/api/v1/courses/${id}`
       );
       setCourses(courseResponse.data.data);
 
       const lessonsResponse = await axios.get(
-        `http://localhost:8080/api/v1/lessons/all?courseId=${id}`
+        `https://learningsystem-xwsq.onrender.com/api/v1/lessons/all?courseId=${id}`
       );
       const lessonData = lessonsResponse.data.data;
       setLessons(lessonData);
@@ -62,7 +62,7 @@ const CoursesLearnLesson = () => {
   const fetchComments = useCallback(async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/reviews/${id}`
+        `https://learningsystem-xwsq.onrender.com/api/v1/reviews/${id}`
       );
       setReviews(response.data.data);
     } catch (error) {
@@ -78,7 +78,7 @@ const CoursesLearnLesson = () => {
   const updateVideoStatus = async (lessonId, videoId) => {
     try {
       await axios.put(
-        `http://localhost:8080/api/v1/lessons/update-video-status`,
+        `https://learningsystem-xwsq.onrender.com/api/v1/lessons/update-video-status`,
         {
           lessonId,
           videoId,
@@ -145,7 +145,7 @@ const CoursesLearnLesson = () => {
     if (comment.trim() && rate > 0) {
       try {
         await axios.post(
-          `http://localhost:8080/api/v1/reviews`,
+          `https://learningsystem-xwsq.onrender.com/api/v1/reviews`,
           {
             userId: user.id,
             courseId: id,

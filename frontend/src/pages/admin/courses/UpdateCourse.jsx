@@ -46,7 +46,7 @@ const UpdateCourse = () => {
     const fetchCourse = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/courses/${id}`,
+          `https://learningsystem-xwsq.onrender.com/api/v1/courses/${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -111,7 +111,7 @@ const UpdateCourse = () => {
       }
 
       await axios.put(
-        `http://localhost:8080/api/v1/courses/${id}`,
+        `https://learningsystem-xwsq.onrender.com/api/v1/courses/${id}`,
         payload,
         config
       );

@@ -12,7 +12,7 @@ const CourseOrder = () => {
   const fetchCourseOrders = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8080/api/v1/registrations",
+        "https://learningsystem-xwsq.onrender.com/api/v1/registrations",
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -32,7 +32,7 @@ const CourseOrder = () => {
   const handleApprove = async (id) => {
     try {
       await axios.put(
-        `http://localhost:8080/api/v1/registrations/${id}`,
+        `https://learningsystem-xwsq.onrender.com/api/v1/registrations/${id}`,
         {
           status: "approved",
         },
@@ -53,7 +53,7 @@ const CourseOrder = () => {
   const handleCancelled = async (id) => {
     try {
       await axios.put(
-        `http://localhost:8080/api/v1/registrations/${id}`,
+        `https://learningsystem-xwsq.onrender.com/api/v1/registrations/${id}`,
         {
           status: "cancelled",
         },
@@ -135,13 +135,12 @@ const CourseOrder = () => {
               <td className="py-3 px-4 text-center">
                 <span
                   className={`px-5 py-1 rounded-full 
-                  ${
-                    courseOrder?.status === "pending"
+                  ${courseOrder?.status === "pending"
                       ? "bg-yellow-200 text-yellow-700"
                       : courseOrder?.status === "approved"
-                      ? "bg-green-200 text-green-700"
-                      : "bg-red-200 text-red-700"
-                  }`}
+                        ? "bg-green-200 text-green-700"
+                        : "bg-red-200 text-red-700"
+                    }`}
                 >
                   {courseOrder?.status}
                 </span>

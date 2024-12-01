@@ -19,7 +19,7 @@ const Lessons = () => {
     const fetchCourse = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/courses/${id}`,
+          `https://learningsystem-xwsq.onrender.com/api/v1/courses/${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -29,7 +29,7 @@ const Lessons = () => {
         setCourse(response.data.data);
 
         const responseLessons = await axios.get(
-          `http://localhost:8080/api/v1/lessons/all?courseId=${id}`,
+          `https://learningsystem-xwsq.onrender.com/api/v1/lessons/all?courseId=${id}`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -63,7 +63,7 @@ const Lessons = () => {
   const confirmDeleteLesson = async () => {
     try {
       await axios.delete(
-        `http://localhost:8080/api/v1/lessons/${lessonToDelete._id}`,
+        `https://learningsystem-xwsq.onrender.com/api/v1/lessons/${lessonToDelete._id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -55,7 +55,7 @@ const EditLesson = () => {
       const fetchLesson = async () => {
         try {
           const response = await axios.get(
-            `http://localhost:8080/api/v1/lessons/detail/${idLesson}`
+            `https://learningsystem-xwsq.onrender.com/api/v1/lessons/detail/${idLesson}`
           );
           const lesson = response.data.data;
           reset(lesson); // Đặt toàn bộ dữ liệu vào form
@@ -78,7 +78,7 @@ const EditLesson = () => {
         videos: data.videos,
       };
       await axios.put(
-        `http://localhost:8080/api/v1/lessons/update/${idLesson}`,
+        `https://learningsystem-xwsq.onrender.com/api/v1/lessons/update/${idLesson}`,
         dataSubmit,
         {
           headers: {

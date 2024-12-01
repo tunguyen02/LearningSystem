@@ -11,7 +11,7 @@ const Cancelled = () => {
     const fetchCourses = async () => {
       try {
         const responseCoursesOrder = await axios.get(
-          "http://localhost:8080/api/v1/courses/my-courses",
+          "https://learningsystem-xwsq.onrender.com/api/v1/courses/my-courses",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,

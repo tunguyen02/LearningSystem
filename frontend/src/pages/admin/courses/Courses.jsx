@@ -16,7 +16,7 @@ const Courses = () => {
 
   const fetchCourses = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/v1/courses");
+      const response = await axios.get("https://learningsystem-xwsq.onrender.com/api/v1/courses");
       setCourses(response.data.data.courses);
       setFilteredCourses(response.data.data.courses);
     } catch (e) {
@@ -37,7 +37,7 @@ const Courses = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/courses/${id}`, {
+      await axios.delete(`https://learningsystem-xwsq.onrender.com/api/v1/courses/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

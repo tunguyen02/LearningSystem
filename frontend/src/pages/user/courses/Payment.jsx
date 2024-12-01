@@ -24,7 +24,7 @@ const Payment = () => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/courses/${id}`
+          `https://learningsystem-xwsq.onrender.com/api/v1/courses/${id}`
         );
         setCourses(response.data.data);
       } catch (e) {
@@ -37,7 +37,7 @@ const Payment = () => {
   const handleConfirmPayment = async () => {
     try {
       await axios.post(
-        "http://localhost:8080/api/v1/registrations",
+        "https://learningsystem-xwsq.onrender.com/api/v1/registrations",
         {
           courseId: id,
           userId: user.id,

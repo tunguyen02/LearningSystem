@@ -27,7 +27,7 @@ const Courses = () => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:8080/api/v1/courses"
+          "https://learningsystem-xwsq.onrender.com/api/v1/courses"
         );
         const fetchedCourses = response.data.data.courses;
         setCourses(fetchedCourses);
@@ -54,9 +54,9 @@ const Courses = () => {
         course.category === filters.selectedCategory;
       const matchesPrice = course.discountPrice
         ? course.discountPrice >= filters.priceRange[0] &&
-          course.discountPrice <= filters.priceRange[1]
+        course.discountPrice <= filters.priceRange[1]
         : course.price >= filters.priceRange[0] &&
-          course.price <= filters.priceRange[1];
+        course.price <= filters.priceRange[1];
       return matchesSearchTerm && matchesCategory && matchesPrice;
     });
 

@@ -28,14 +28,14 @@ const Dashboard = () => {
       try {
         const [usersRes, coursesRes, ordersRes, recentActivities] =
           await Promise.all([
-            axios.get("http://localhost:8080/api/v1/users"),
-            axios.get("http://localhost:8080/api/v1/courses"),
-            axios.get("http://localhost:8080/api/v1/registrations", {
+            axios.get("https://learningsystem-xwsq.onrender.com/api/v1/users"),
+            axios.get("https://learningsystem-xwsq.onrender.com/api/v1/courses"),
+            axios.get("https://learningsystem-xwsq.onrender.com/api/v1/registrations", {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },
             }),
-            axios.get("http://localhost:8080/api/v1/courses/daily-stats", {
+            axios.get("https://learningsystem-xwsq.onrender.com/api/v1/courses/daily-stats", {
               headers: {
                 Authorization: `Bearer ${localStorage.getItem("token")}`,
               },

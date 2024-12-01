@@ -51,7 +51,7 @@ const CreateCourse = () => {
       formData.append("image", imageFile);
 
       const response = await axios.post(
-        "http://localhost:8080/api/v1/courses",
+        "https://learningsystem-xwsq.onrender.com/api/v1/courses",
         formData,
         {
           headers: {

@@ -44,7 +44,7 @@ const DetailsCourses = () => {
   const fetchComments = useCallback(async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/reviews/${id}`
+        `https://learningsystem-xwsq.onrender.com/api/v1/reviews/${id}`
       );
       setReviews(response.data.data);
     } catch (e) {
@@ -56,15 +56,15 @@ const DetailsCourses = () => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8080/api/v1/courses/${id}`
+          `https://learningsystem-xwsq.onrender.com/api/v1/courses/${id}`
         );
         setCourses(response.data.data);
         const responseLessons = await axios.get(
-          `http://localhost:8080/api/v1/lessons/all?courseId=${id}`
+          `https://learningsystem-xwsq.onrender.com/api/v1/lessons/all?courseId=${id}`
         );
         setLessons(responseLessons.data.data);
         const responseConfirm = await axios.get(
-          `http://localhost:8080/api/v1/courses/${id}/confirm`,
+          `https://learningsystem-xwsq.onrender.com/api/v1/courses/${id}/confirm`,
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -85,7 +85,7 @@ const DetailsCourses = () => {
     if (comment.trim() && rate > 0) {
       try {
         await axios.post(
-          `http://localhost:8080/api/v1/reviews`,
+          `https://learningsystem-xwsq.onrender.com/api/v1/reviews`,
           {
             userId: user.id,
             courseId: id,
