@@ -75,10 +75,71 @@ const CoursesLearnLesson = () => {
     fetchComments();
   }, [fetchLessonsAndCourse, fetchComments]);
 
+  const updateVideoStatus = async (lessonId, videoId) => {
+    try {
+      await axios.put(
+        `http://localhost:8080/api/v1/lessons/update-video-status`,
+        {
+          lessonId,
+          videoId,
+          watched: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      // message.success("Video status updated successfully!");
+    } catch (error) {
+      console.error("Error updating video status:", error);
+      message.error("Failed to update video status.");
+    }
+  };
+
+
+
   const handleVideoClick = (lesson, video) => {
     setCurrentLesson(lesson);
     setCurrentVideo(video);
+
+    const updatedLesson = { ...lesson };
+    updatedLesson.videos = updatedLesson.videos.map((v) =>
+      v._id === video._id ? { ...v, watched: true } : v
+    );
+    setLessons((prevLessons) =>
+      prevLessons.map((l) => (l._id === lesson._id ? updatedLesson : l))
+    );
+
+    updateVideoStatus(lesson._id, video._id);
   };
+
+  const handleMarkAsWatched = async (lesson, video) => {
+    try {
+      // Gọi API để cập nhật trạng thái video
+      await updateVideoStatus(lesson._id, video._id);
+
+      // Cập nhật trạng thái watched trong state
+      setLessons((prevLessons) =>
+        prevLessons.map((l) =>
+          l._id === lesson._id
+            ? {
+              ...l,
+              videos: l.videos.map((v) =>
+                v._id === video._id ? { ...v, watched: true } : v
+              ),
+            }
+            : l
+        )
+      );
+      message.success("Video marked as watched!");
+    } catch (error) {
+      console.error("Failed to mark video as watched:", error);
+      message.error("Failed to mark video as watched.");
+    }
+  };
+
+
 
   const handleCommentSubmit = async () => {
     if (comment.trim() && rate > 0) {
@@ -206,19 +267,23 @@ const CoursesLearnLesson = () => {
                       <div
                         key={video._id}
                         onClick={() => handleVideoClick(lesson, video)}
-                        className="p-2 rounded-lg hover:bg-blue-50 transition cursor-pointer border"
-                        style={{ display: "flex", alignItems: "center" }}
+                        className={`p-2 rounded-lg hover:bg-blue-50 transition cursor-pointer border ${video.watched ? "bg-green-50" : ""
+                          }`}
+                        style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
                       >
-                        <span
-                          className="text-base font-semibold"
-                          style={{ marginRight: "8px" }}
-                        >
-                          {video.title}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          Click to watch
-                        </span>
+                        <span className="text-base font-semibold">{video.title}</span>
+
+                        {/* Checkbox để đánh dấu video đã xem */}
+                        <input
+                          type="checkbox"
+                          checked={video.watched}
+                          onChange={() => handleMarkAsWatched(lesson, video)}
+                          className="form-checkbox h-5 w-5 text-green-500"
+                        />
                       </div>
+
+
+
                     ))}
                   </div>
                 </Panel>
@@ -230,4 +295,5 @@ const CoursesLearnLesson = () => {
     </div>
   );
 };
-export default CoursesLearnLesson;  
+
+export default CoursesLearnLesson;
