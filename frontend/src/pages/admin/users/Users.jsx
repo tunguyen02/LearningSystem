@@ -1,8 +1,8 @@
-import { Button, Input, Modal } from "antd";
+import { Button, Input, message, Modal } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
-import { IoEyeOutline } from "react-icons/io5";
+import { IoEyeOutline, IoTrashOutline } from "react-icons/io5";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +10,8 @@ const Users = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isVisited, setIsVisited] = useState(false);
   const [dataDetails, setDataDetails] = useState({});
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [courseIdToDelete, setCourseIdToDelete] = useState(null);
 
   const handleClickDetails = (data) => {
     setDataDetails(data);
@@ -31,18 +33,57 @@ const Users = () => {
     setFilteredUsers(filtered);
   };
 
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get(
+        "https://learningsystem-xwsq.onrender.com/api/v1/users"
+      );
+      setUsers(response.data.data);
+      setFilteredUsers(response.data.data);
+    } catch (e) {
+      console.error("Failed to fetch users:", e);
+    }
+  };
+
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get("https://learningsystem-xwsq.onrender.com/api/v1/users");
-        setUsers(response.data.data);
-        setFilteredUsers(response.data.data);
-      } catch (e) {
-        console.error("Failed to fetch users:", e);
-      }
-    };
     fetchUsers();
   }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(
+        `https://learningsystem-xwsq.onrender.com/api/v1/users/delete/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      fetchUsers();
+      message.success("User deleted successfully!");
+    } catch (e) {
+      console.error("Failed to delete user:", e);
+      message.error("Failed to delete user!");
+    }
+  };
+
+  const showDeleteConfirm = (id) => {
+    setCourseIdToDelete(id);
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    if (courseIdToDelete) {
+      handleDelete(courseIdToDelete);
+      setIsModalVisible(false);
+      setCourseIdToDelete(null);
+    }
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setCourseIdToDelete(null);
+  };
 
   return (
     <div className="flex flex-col gap-4 px-2">
@@ -80,6 +121,11 @@ const Users = () => {
                   icon={<IoEyeOutline size={20} />}
                   onClick={() => handleClickDetails(user)}
                 />
+                <Button
+                  className="border-none"
+                  icon={<IoTrashOutline size={20} />}
+                  onClick={() => showDeleteConfirm(user._id)}
+                />
               </td>
             </tr>
           ))}
@@ -114,6 +160,16 @@ const Users = () => {
             </div>
           </div>
         </div>
+      </Modal>
+      <Modal
+        title="Delete Course"
+        open={isModalVisible}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        okText="Yes"
+        cancelText="No"
+      >
+        <p>Are you sure you want to delete this user?</p>
       </Modal>
     </div>
   );
