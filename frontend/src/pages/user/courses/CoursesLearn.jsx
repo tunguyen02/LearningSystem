@@ -97,8 +97,6 @@ const CoursesLearnLesson = () => {
     }
   };
 
-
-
   const handleVideoClick = (lesson, video) => {
     setCurrentLesson(lesson);
     setCurrentVideo(video);
@@ -114,32 +112,30 @@ const CoursesLearnLesson = () => {
     updateVideoStatus(lesson._id, video._id);
   };
 
-  const handleMarkAsWatched = async (lesson, video) => {
-    try {
-      // Gọi API để cập nhật trạng thái video
-      await updateVideoStatus(lesson._id, video._id);
+  // const handleMarkAsWatched = async (lesson, video) => {
+  //   try {
+  //     // Gọi API để cập nhật trạng thái video
+  //     await updateVideoStatus(lesson._id, video._id);
 
-      // Cập nhật trạng thái watched trong state
-      setLessons((prevLessons) =>
-        prevLessons.map((l) =>
-          l._id === lesson._id
-            ? {
-              ...l,
-              videos: l.videos.map((v) =>
-                v._id === video._id ? { ...v, watched: true } : v
-              ),
-            }
-            : l
-        )
-      );
-      message.success("Video marked as watched!");
-    } catch (error) {
-      console.error("Failed to mark video as watched:", error);
-      message.error("Failed to mark video as watched.");
-    }
-  };
-
-
+  //     // Cập nhật trạng thái watched trong state
+  //     setLessons((prevLessons) =>
+  //       prevLessons.map((l) =>
+  //         l._id === lesson._id
+  //           ? {
+  //               ...l,
+  //               videos: l.videos.map((v) =>
+  //                 v._id === video._id ? { ...v, watched: true } : v
+  //               ),
+  //             }
+  //           : l
+  //       )
+  //     );
+  //     message.success("Video marked as watched!");
+  //   } catch (error) {
+  //     console.error("Failed to mark video as watched:", error);
+  //     message.error("Failed to mark video as watched.");
+  //   }
+  // };
 
   const handleCommentSubmit = async () => {
     if (comment.trim() && rate > 0) {
@@ -267,23 +263,27 @@ const CoursesLearnLesson = () => {
                       <div
                         key={video._id}
                         onClick={() => handleVideoClick(lesson, video)}
-                        className={`p-2 rounded-lg hover:bg-blue-50 transition cursor-pointer border ${video.watched ? "bg-green-50" : ""
-                          }`}
-                        style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+                        className={`p-2 rounded-lg hover:bg-blue-50 transition cursor-pointer border ${
+                          video.watched ? "bg-green-50" : ""
+                        }`}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
                       >
-                        <span className="text-base font-semibold">{video.title}</span>
+                        <span className="text-base font-semibold">
+                          {video.title}
+                        </span>
 
                         {/* Checkbox để đánh dấu video đã xem */}
-                        <input
+                        {/* <input
                           type="checkbox"
                           checked={video.watched}
                           onChange={() => handleMarkAsWatched(lesson, video)}
                           className="form-checkbox h-5 w-5 text-green-500"
-                        />
+                        /> */}
                       </div>
-
-
-
                     ))}
                   </div>
                 </Panel>
