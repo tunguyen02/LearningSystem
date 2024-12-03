@@ -1,6 +1,7 @@
 import LessonModel from "../models/lesson.model.js";
 
 const lessonController = {
+
   createLesson: async (req, res) => {
     try {
       const lesson = new LessonModel(req.body);
